@@ -44,12 +44,14 @@ function NavItem({
   icon: Icon,
   badge,
   exact,
+  muted,
 }: {
   href: string;
   label: string;
   icon: LucideIcon;
   badge?: number;
   exact?: boolean;
+  muted?: boolean;
 }) {
   const pathname = usePathname();
   const active = pathname === href || (!exact && pathname.startsWith(`${href}/`));
@@ -57,8 +59,10 @@ function NavItem({
     <Link
       href={href}
       className={clsx(
-        "mx-2 flex h-[30px] items-center gap-3 rounded-nav px-2 text-[13px] tracking-[-0.05px] text-ink transition-colors",
+        "mx-2 flex h-[30px] items-center gap-3 rounded-nav px-2 text-[13px] tracking-[-0.05px] transition-colors",
+        !muted || active ? "text-ink" : null,
         active ? "bg-hover" : "hover:bg-line",
+        muted && !active && "text-ink-3 hover:text-ink",
       )}
     >
       <Icon size={14} strokeWidth={2} className="shrink-0" />
@@ -119,9 +123,7 @@ export function Sidebar({
           {customApps.map((app) => (
             <NavItem key={app.id} href={`/apps/custom/${app.id}`} label={app.name} icon={Boxes} />
           ))}
-          <Link href="/apps" className="mx-4 mt-0.5 inline-flex h-6 items-center gap-3 text-[13px] tracking-[-0.05px] text-ink-3 hover:text-ink">
-            <Plus size={14} strokeWidth={2} /> Add App
-          </Link>
+          <NavItem href="/apps" label="Add App" icon={Plus} exact muted />
         </Group>
 
         <Group label="Customize">

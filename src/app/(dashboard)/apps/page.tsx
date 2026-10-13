@@ -1,72 +1,56 @@
 import Link from "next/link";
-import { Boxes, Check } from "lucide-react";
-import { clsx } from "clsx";
-import { Badge, Button, PageHeader, buttonClass } from "@/components/ui";
-import { APPS, APP_KEYS, parseAppKey } from "@/lib/apps";
+import { Boxes } from "lucide-react";
+import { Button, PageHeader, buttonClass } from "@/components/ui";
+import { APPS, APP_KEYS } from "@/lib/apps";
 import { getWorkspace } from "@/lib/workspace";
 import { installApp } from "./actions";
+import { AddAppBuilder } from "./add-app-builder";
 
-export default async function AppLibraryPage({ searchParams }: { searchParams: Promise<{ app?: string }> }) {
-  const { app } = await searchParams;
-  const { installedApps } = await getWorkspace();
-  const selected = APPS[parseAppKey(app ?? "") ?? APP_KEYS.find((key) => !installedApps.has(key)) ?? "files"];
-  const isInstalled = installedApps.has(selected.key);
+export default async function AddAppPage() {
+  const { member, installedApps } = await getWorkspace();
+  const firstName = (member.display_name || member.email).split(/[\s@]/)[0];
 
   return (
     <>
       <PageHeader
-        title="App library"
+        title="Add App"
         actions={
           <Link href="/apps/custom" className={buttonClass("secondary")}>
-            <Boxes size={14} /> Custom apps
+            <Boxes /> Custom apps
           </Link>
         }
       />
-      <div className="flex min-h-0 flex-1">
-        <ul className="w-80 shrink-0 overflow-y-auto border-r border-line p-3">
-          {APP_KEYS.map((key) => (
-            <li key={key}>
-              <Link
-                href={`/apps?app=${key}`}
-                className={clsx(
-                  "flex items-start gap-3 rounded-card px-3 py-2.5",
-                  key === selected.key ? "bg-hover" : "hover:bg-surface",
-                )}
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 text-[13px] font-medium">
-                    {APPS[key].name}
-                    {installedApps.has(key) ? <Check size={13} className="text-success" /> : null}
+      <div className="flex-1 overflow-y-auto">
+        <div className="w-full max-w-[1000px] px-5 pt-14 pb-16">
+          <h1 className="mb-5 text-[22px] font-medium text-ink">{firstName}, what app will you add?</h1>
+          <AddAppBuilder />
+
+          <h2 className="mt-12 text-[16px] font-medium text-ink">Browse all apps</h2>
+          <ul className="mt-4 grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
+            {APP_KEYS.map((key) => {
+              const app = APPS[key];
+              return (
+                <li key={key} className="flex items-start gap-3 rounded-card border border-line-strong p-4">
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[13px] font-medium text-ink">{app.name}</div>
+                    <p className="mt-0.5 text-[13px] text-ink-3">{app.summary}</p>
                   </div>
-                  <div className="truncate text-[12px] text-ink-3">{APPS[key].summary}</div>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <article className="flex-1 overflow-y-auto px-10 py-10">
-          <div className="max-w-xl">
-            <div className="flex items-center gap-2">
-              <h1 className="text-[22px] font-semibold tracking-tight">{selected.name}</h1>
-              {isInstalled ? <Badge tone="success">Installed</Badge> : null}
-            </div>
-            <p className="mt-1 text-[14px] text-ink-3">{selected.summary}</p>
-            <p className="mt-5 text-[14px] leading-relaxed text-ink-2">{selected.detail}</p>
-            <div className="mt-6">
-              {isInstalled ? (
-                <Link href={selected.href} className={buttonClass("secondary")}>
-                  Open {selected.name}
-                </Link>
-              ) : (
-                <form action={installApp.bind(null, selected.key)}>
-                  <Button type="submit" variant="primary">
-                    Add {selected.name}
-                  </Button>
-                </form>
-              )}
-            </div>
-          </div>
-        </article>
+                  {installedApps.has(key) ? (
+                    <Link href={app.href} className={buttonClass("secondary")}>
+                      Open
+                    </Link>
+                  ) : (
+                    <form action={installApp.bind(null, key)}>
+                      <Button type="submit" variant="primary">
+                        Add
+                      </Button>
+                    </form>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </div>
     </>
   );

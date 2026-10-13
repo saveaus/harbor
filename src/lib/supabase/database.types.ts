@@ -360,6 +360,51 @@ export type Database = {
           },
         ]
       }
+      custom_app_messages: {
+        Row: {
+          app_id: string
+          content: string
+          created_at: string
+          created_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_builder_role"]
+          workspace_id: string
+        }
+        Insert: {
+          app_id: string
+          content: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_builder_role"]
+          workspace_id: string
+        }
+        Update: {
+          app_id?: string
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_builder_role"]
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_app_messages_app_id_fkey"
+            columns: ["app_id"]
+            isOneToOne: false
+            referencedRelation: "custom_apps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "custom_app_messages_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       custom_apps: {
         Row: {
           code: string
@@ -1441,6 +1486,7 @@ export type Database = {
       storefront: { Args: { store_slug: string }; Returns: Json }
     }
     Enums: {
+      app_builder_role: "user" | "assistant"
       contact_status: "not_invited" | "invited" | "active"
       contract_status: "awaiting_signature" | "signed" | "declined"
       custom_field_type: "text" | "number" | "date" | "url" | "email" | "phone"
@@ -1576,6 +1622,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_builder_role: ["user", "assistant"],
       contact_status: ["not_invited", "invited", "active"],
       contract_status: ["awaiting_signature", "signed", "declined"],
       custom_field_type: ["text", "number", "date", "url", "email", "phone"],
