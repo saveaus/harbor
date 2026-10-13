@@ -4,6 +4,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { text } from "@/lib/form-data";
+import { addProjectDomain, domainsConfigured, removeProjectDomain } from "@/lib/vercel-domains";
 import { getWorkspace, requireAdmin } from "@/lib/workspace";
 
 /** Same rule as the workspaces.custom_domain check constraint. */
@@ -24,29 +25,46 @@ export async function updateWorkspace(form: FormData) {
   revalidatePath("/", "layout");
 }
 
+const DOMAINS_PATH = "/settings/custom-domains";
+function domainError(message: string): never {
+  redirect(`${DOMAINS_PATH}?error=${encodeURIComponent(message)}`);
+}
+
 export async function updateCustomDomain(form: FormData) {
-  const { supabase, workspace } = await getWorkspace();
+  const { supabase, workspace } = await requireAdmin(DOMAINS_PATH);
   const domain = text(form, "domain").toLowerCase().replace(/\.$/, "");
-  if (!HOSTNAME.test(domain))
-    redirect(`/settings/custom-domains?error=${encodeURIComponent("Enter a hostname like portal.yourcompany.com, without https://")}`);
+  if (!HOSTNAME.test(domain)) domainError("Enter a hostname like portal.yourcompany.com, without https://");
+  let attachedHere = false;
+  if (domainsConfigured()) {
+    const attached = await addProjectDomain(domain);
+    if (!attached.ok) domainError(attached.reason);
+    attachedHere = attached.created;
+  }
   const { error } = await supabase
     .from("workspaces")
     .update({ custom_domain: domain, custom_domain_added_at: new Date().toISOString() })
     .eq("id", workspace.id);
-  if (error?.code === "23505") redirect(`/settings/custom-domains?error=${encodeURIComponent("Another workspace already uses that domain.")}`);
-  if (error) throw error;
-  revalidatePath("/settings/custom-domains");
-  redirect("/settings/custom-domains");
+  if (error) {
+    if (attachedHere) await removeProjectDomain(domain);
+    if (error.code === "23505") domainError("Another workspace already uses that domain.");
+    throw error;
+  }
+  revalidatePath(DOMAINS_PATH);
+  redirect(DOMAINS_PATH);
 }
 
 export async function removeCustomDomain() {
-  const { supabase, workspace } = await getWorkspace();
+  const { supabase, workspace } = await requireAdmin(DOMAINS_PATH);
+  if (workspace.custom_domain) {
+    const detached = await removeProjectDomain(workspace.custom_domain);
+    if (!detached.ok) domainError(`Couldn't remove the domain from hosting: ${detached.reason}`);
+  }
   const { error } = await supabase
     .from("workspaces")
     .update({ custom_domain: null, custom_domain_added_at: null })
     .eq("id", workspace.id);
   if (error) throw error;
-  revalidatePath("/settings/custom-domains");
+  revalidatePath(DOMAINS_PATH);
 }
 
 export async function updateProfile(form: FormData) {
