@@ -20,6 +20,7 @@ import {
   MessageSquare,
   Plus,
   Settings,
+  Sparkles,
   SlidersHorizontal,
   SquareUser,
   Users,
@@ -88,6 +89,7 @@ export function Sidebar({
   installedApps,
   customApps,
   unreadNotifications,
+  assistant,
   signOut,
 }: {
   workspaceName: string;
@@ -96,6 +98,7 @@ export function Sidebar({
   installedApps: AppKey[];
   customApps: { id: string; name: string }[];
   unreadNotifications: number;
+  assistant: boolean;
   signOut: () => Promise<void>;
 }) {
   const installed = new Set(installedApps);
@@ -110,6 +113,7 @@ export function Sidebar({
       </div>
 
       <nav className="flex-1 overflow-y-auto pb-4">
+        {assistant ? <NavItem href="/assistant" label="Assistant" icon={Sparkles} /> : null}
         <NavItem href="/crm" label="CRM" icon={SquareUser} />
         <NavItem href="/team" label="Team" icon={Users} />
         <NavItem href="/notifications" label="Notifications" icon={Bell} badge={unreadNotifications} />

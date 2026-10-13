@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Sidebar } from "@/components/sidebar";
 import { signOut } from "@/app/auth-actions";
+import { assistantAvailable } from "@/lib/assistant";
 import { logoUrl } from "@/lib/brand";
 import { getWorkspace } from "@/lib/workspace";
 
@@ -36,6 +37,7 @@ async function DashboardShell({ children }: { children: React.ReactNode }) {
         installedApps={[...installedApps]}
         customApps={customApps.data}
         unreadNotifications={unread.count ?? 0}
+        assistant={assistantAvailable(workspace)}
         signOut={signOut}
       />
       <main className="flex min-w-0 flex-1 flex-col overflow-hidden">{children}</main>
