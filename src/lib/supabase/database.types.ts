@@ -1493,10 +1493,17 @@ export type Database = {
           currency: string
           custom_domain: string | null
           custom_domain_added_at: string | null
+          getting_started_dismissed: boolean
           id: string
           legal_name: string
           logo_path: string | null
           name: string
+          portal_banner_path: string | null
+          portal_home_show_apps: boolean
+          portal_home_body: string
+          portal_home_show_tasks: boolean
+          portal_home_title: string
+          portal_sidebar_color: string
           slug: string
           store_description: string
           store_enabled: boolean
@@ -1518,10 +1525,17 @@ export type Database = {
           currency?: string
           custom_domain?: string | null
           custom_domain_added_at?: string | null
+          getting_started_dismissed?: boolean
           id?: string
           legal_name?: string
           logo_path?: string | null
           name: string
+          portal_banner_path?: string | null
+          portal_home_show_apps?: boolean
+          portal_home_body?: string
+          portal_home_show_tasks?: boolean
+          portal_home_title?: string
+          portal_sidebar_color?: string
           slug: string
           store_description?: string
           store_enabled?: boolean
@@ -1543,10 +1557,17 @@ export type Database = {
           currency?: string
           custom_domain?: string | null
           custom_domain_added_at?: string | null
+          getting_started_dismissed?: boolean
           id?: string
           legal_name?: string
           logo_path?: string | null
           name?: string
+          portal_banner_path?: string | null
+          portal_home_show_apps?: boolean
+          portal_home_body?: string
+          portal_home_show_tasks?: boolean
+          portal_home_title?: string
+          portal_sidebar_color?: string
           slug?: string
           store_description?: string
           store_enabled?: boolean

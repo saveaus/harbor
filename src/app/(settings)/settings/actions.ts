@@ -6,8 +6,6 @@ import { redirect } from "next/navigation";
 import { text } from "@/lib/form-data";
 import { getWorkspace, requireAdmin } from "@/lib/workspace";
 
-const HEX_COLOR = /^#[0-9a-f]{6}$/i;
-const LOGO_PATH = /^[0-9a-f-]{36}\/logo-\d+\.(png|jpe?g|webp)$/;
 /** Same rule as the workspaces.custom_domain check constraint. */
 const HOSTNAME = /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/;
 
@@ -24,40 +22,6 @@ export async function updateWorkspace(form: FormData) {
     .eq("id", workspace.id);
   if (error) throw error;
   revalidatePath("/", "layout");
-}
-
-export async function updateBrand(form: FormData) {
-  const { supabase, workspace } = await getWorkspace();
-  const color = text(form, "brand_color");
-  if (!HEX_COLOR.test(color)) throw new Error("Brand color must be a hex value like #2f6fed");
-  const { error } = await supabase
-    .from("workspaces")
-    .update({ name: text(form, "name"), brand_color: color })
-    .eq("id", workspace.id);
-  if (error) throw error;
-  revalidatePath("/", "layout");
-}
-
-async function replaceLogo(newPath: string | null) {
-  const { supabase, workspace } = await getWorkspace();
-  const { error } = await supabase.from("workspaces").update({ logo_path: newPath }).eq("id", workspace.id);
-  if (error) throw error;
-  if (workspace.logo_path && workspace.logo_path !== newPath) {
-    const removal = await supabase.storage.from("brand-assets").remove([workspace.logo_path]);
-    if (removal.error) throw removal.error;
-  }
-  revalidatePath("/", "layout");
-}
-
-/** The browser uploads the image directly; this records it and removes the previous logo. */
-export async function setLogo(path: string) {
-  const { workspace } = await getWorkspace();
-  if (!LOGO_PATH.test(path) || !path.startsWith(`${workspace.id}/`)) throw new Error("Logo path is outside this workspace");
-  await replaceLogo(path);
-}
-
-export async function removeLogo() {
-  await replaceLogo(null);
 }
 
 export async function updateCustomDomain(form: FormData) {

@@ -6,14 +6,8 @@ import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
 import {
   Bell,
-  BookOpen,
   Boxes,
   ChevronDown,
-  ClipboardList,
-  Clock,
-  CreditCard,
-  FileSignature,
-  FileText,
   Home,
   LayoutGrid,
   LogOut,
@@ -28,16 +22,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
+import { APP_ICONS } from "@/lib/app-icons";
 import { APPS, APP_KEYS, type AppKey } from "@/lib/apps";
-
-const appIcons: Record<AppKey, LucideIcon> = {
-  files: FileText,
-  payments: CreditCard,
-  contracts: FileSignature,
-  forms: ClipboardList,
-  helpdesk: BookOpen,
-  timetracker: Clock,
-};
 
 function NavItem({
   href,
@@ -122,7 +108,7 @@ export function Sidebar({
           <NavItem href="/home" label="Home" icon={Home} />
           <NavItem href="/messages" label="Messages" icon={MessageSquare} />
           {APP_KEYS.filter((key) => installed.has(key)).map((key) => (
-            <NavItem key={key} href={APPS[key].href} label={APPS[key].name} icon={appIcons[key]} />
+            <NavItem key={key} href={APPS[key].href} label={APPS[key].name} icon={APP_ICONS[key]} />
           ))}
           {customApps.map((app) => (
             <NavItem key={app.id} href={`/apps/custom/${app.id}`} label={app.name} icon={Boxes} />
@@ -132,7 +118,7 @@ export function Sidebar({
 
         <Group label="Customize">
           <NavItem href="/brand" label="Brand" icon={LayoutGrid} />
-          <NavItem href="/apps/manage" label="Apps" icon={SlidersHorizontal} />
+          <NavItem href="/apps/manage" label="App Library" icon={SlidersHorizontal} />
           <NavItem href="/automations" label="Automations" icon={Workflow} />
         </Group>
       </nav>

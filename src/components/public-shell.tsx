@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { BrandMark } from "./brand-mark";
-import { logoUrl } from "@/lib/brand";
+import { brandAssetUrl } from "@/lib/brand";
 
 /** Frame for pages anyone can open without signing in: payment links and stores. */
 export function PublicShell({
@@ -17,7 +17,7 @@ export function PublicShell({
   return (
     <div className="min-h-full bg-surface">
       <header className="flex h-[61px] items-center gap-2.5 border-b border-line bg-canvas px-6">
-        <BrandMark name={name} color={color} logoUrl={logoUrl(logoPath)} size="md" />
+        <BrandMark name={name} color={color} logoUrl={brandAssetUrl(logoPath)} size="md" />
         <span className="text-[14px] font-medium text-ink">{name}</span>
       </header>
       <div className="mx-auto w-full max-w-[880px] px-6 py-12">{children}</div>

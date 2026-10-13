@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { BrandMark } from "@/components/brand-mark";
 import { Field, Input, buttonClass } from "@/components/ui";
-import { logoUrl } from "@/lib/brand";
+import { brandAssetUrl } from "@/lib/brand";
 import { getInvitePreview, type InvitePreview } from "@/lib/invites";
 import { createClient } from "@/lib/supabase/server";
 import { acceptInvite, createAccountAndAccept, emailSignInLink, signInAndAccept, signOutForInvite } from "../actions";
@@ -40,7 +40,7 @@ async function InviteCard({ params, searchParams }: InviteProps) {
       </Shell>
     );
 
-  const brand = <BrandMark name={invite.workspaceName} color={invite.brandColor} logoUrl={logoUrl(invite.logoPath)} size="md" />;
+  const brand = <BrandMark name={invite.workspaceName} color={invite.brandColor} logoUrl={brandAssetUrl(invite.logoPath)} size="md" />;
   const audience = invite.kind === "client" ? "client portal" : "team";
   const title = `Join the ${invite.workspaceName} ${audience}`;
 

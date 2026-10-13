@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { signOut } from "@/app/auth-actions";
-import { brandAccentStyle, logoUrl } from "@/lib/brand";
+import { brandAccentStyle, brandAssetUrl } from "@/lib/brand";
 import { contactName } from "@/lib/format";
 import { getPortal } from "@/lib/portal";
 import { PortalNav } from "./portal-nav";
@@ -18,14 +18,15 @@ async function PortalShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-full" style={brandAccentStyle(workspace.brand_color)}>
       <PortalNav
-        workspaceName={workspace.name}
-        brandColor={workspace.brand_color}
-        logoUrl={logoUrl(workspace.logo_path)}
-        viewerName={contactName(contact)}
-        viewerDetail={company?.name ?? contact.email}
+        brand={{
+          name: workspace.name,
+          accentColor: workspace.brand_color,
+          sidebarColor: workspace.portal_sidebar_color,
+          logoUrl: brandAssetUrl(workspace.logo_path),
+        }}
+        viewer={{ name: contactName(contact), detail: company?.name ?? contact.email }}
         installedApps={[...installedApps]}
-        hasMessages={channels.messages !== null}
-        hasFiles={channels.files !== null}
+        channels={{ messages: channels.messages !== null, files: channels.files !== null }}
         signOut={signOut}
       />
       <main className="flex min-w-0 flex-1 flex-col overflow-hidden">{children}</main>

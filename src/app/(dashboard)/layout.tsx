@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Sidebar } from "@/components/sidebar";
 import { signOut } from "@/app/auth-actions";
 import { assistantAvailable } from "@/lib/assistant";
-import { logoUrl } from "@/lib/brand";
+import { brandAssetUrl } from "@/lib/brand";
 import { getWorkspace } from "@/lib/workspace";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -33,7 +33,7 @@ async function DashboardShell({ children }: { children: React.ReactNode }) {
       <Sidebar
         workspaceName={workspace.name}
         brandColor={workspace.brand_color}
-        logoUrl={logoUrl(workspace.logo_path)}
+        logoUrl={brandAssetUrl(workspace.logo_path)}
         installedApps={[...installedApps]}
         customApps={customApps.data}
         unreadNotifications={unread.count ?? 0}

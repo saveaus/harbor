@@ -8,7 +8,20 @@ export type PortalContext = {
   supabase: ServerSupabase;
   contact: Pick<Tables<"contacts">, "id" | "first_name" | "last_name" | "email" | "company_id">;
   company: { id: string; name: string } | null;
-  workspace: Pick<Tables<"workspaces">, "id" | "name" | "brand_color" | "logo_path" | "welcome_message">;
+  workspace: Pick<
+    Tables<"workspaces">,
+    | "id"
+    | "name"
+    | "brand_color"
+    | "logo_path"
+    | "welcome_message"
+    | "portal_home_body"
+    | "portal_sidebar_color"
+    | "portal_banner_path"
+    | "portal_home_title"
+    | "portal_home_show_tasks"
+    | "portal_home_show_apps"
+  >;
   installedApps: ReadonlySet<AppKey>;
   /** Contacts in a company share the company's conversation and file space. */
   channels: { messages: string | null; files: string | null };
@@ -24,7 +37,7 @@ export const getPortal = cache(async (): Promise<PortalContext> => {
   const { data: contact, error } = await supabase
     .from("contacts")
     .select(
-      "id, first_name, last_name, email, company_id, company:companies(id, name), workspace:workspaces(id, name, brand_color, logo_path, welcome_message)",
+      "id, first_name, last_name, email, company_id, company:companies(id, name), workspace:workspaces(id, name, brand_color, logo_path, welcome_message, portal_home_body, portal_sidebar_color, portal_banner_path, portal_home_title, portal_home_show_tasks, portal_home_show_apps)",
     )
     .eq("user_id", user.id)
     .order("created_at")

@@ -1,11 +1,11 @@
 "use client";
 
 import { ImageUp, Trash2 } from "lucide-react";
-import { useRef, useState } from "react";
-import { BrandMark } from "@/components/brand-mark";
+import { useRef, useState, type ReactNode } from "react";
 import { buttonClass } from "@/components/ui";
 import { LOGO_MAX_BYTES, LOGO_TYPES } from "@/lib/brand";
 import { createClient } from "@/lib/supabase/browser";
+import { removeBrandAsset, setBrandAsset, type BrandAsset } from "./actions";
 
 const extensions: Record<(typeof LOGO_TYPES)[number], string> = {
   "image/png": "png",
@@ -13,47 +13,44 @@ const extensions: Record<(typeof LOGO_TYPES)[number], string> = {
   "image/webp": "webp",
 };
 
-function isLogoType(type: string): type is (typeof LOGO_TYPES)[number] {
+function isImageType(type: string): type is (typeof LOGO_TYPES)[number] {
   return (LOGO_TYPES as readonly string[]).includes(type);
 }
 
-export function LogoUploader({
+/** Uploads a logo or banner straight to storage, then records it. Saved immediately, independent of any form. */
+export function AssetUploader({
   workspaceId,
-  name,
-  color,
-  logoUrl,
-  setLogo,
-  removeLogo,
+  kind,
+  hasImage,
+  preview,
 }: {
   workspaceId: string;
-  name: string;
-  color: string;
-  logoUrl: string | null;
-  setLogo: (path: string) => Promise<void>;
-  removeLogo: () => Promise<void>;
+  kind: BrandAsset;
+  hasImage: boolean;
+  preview: ReactNode;
 }) {
   const input = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<string | null>(null);
 
   async function upload(file: File) {
-    if (!isLogoType(file.type)) return setStatus("Use a PNG, JPEG or WebP image.");
-    if (file.size > LOGO_MAX_BYTES) return setStatus("Logos can be up to 2 MB.");
+    if (!isImageType(file.type)) return setStatus("Use a PNG, JPEG or WebP image.");
+    if (file.size > LOGO_MAX_BYTES) return setStatus("Images can be up to 2 MB.");
     setStatus("Uploading…");
-    const path = `${workspaceId}/logo-${Date.now()}.${extensions[file.type]}`;
+    const path = `${workspaceId}/${kind}-${Date.now()}.${extensions[file.type]}`;
     const { error } = await createClient().storage.from("brand-assets").upload(path, file, { contentType: file.type });
     if (error) return setStatus(`Couldn't upload: ${error.message}`);
-    await setLogo(path);
+    await setBrandAsset(kind, path);
     setStatus(null);
   }
 
   return (
-    <div className="flex items-center gap-3">
-      <BrandMark name={name} color={color} logoUrl={logoUrl} size="lg" />
+    <div className="flex flex-wrap items-center gap-3">
+      {preview}
       <button type="button" className={buttonClass("secondary")} onClick={() => input.current?.click()}>
-        <ImageUp size={14} /> {logoUrl ? "Replace" : "Upload logo"}
+        <ImageUp size={14} /> {hasImage ? "Replace" : "Upload"}
       </button>
-      {logoUrl ? (
-        <button type="button" className={buttonClass("ghost")} onClick={() => void removeLogo()}>
+      {hasImage ? (
+        <button type="button" className={buttonClass("ghost")} onClick={() => void removeBrandAsset(kind)}>
           <Trash2 size={14} /> Remove
         </button>
       ) : null}
