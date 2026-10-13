@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cents, text } from "@/lib/form-data";
-import { notify } from "@/lib/notify";
+import { emailClients, notify } from "@/lib/notify";
 import { invoiceNumber, parseRecipient } from "@/lib/payments";
 import { requireApp } from "@/lib/workspace";
 
@@ -63,7 +63,7 @@ export async function createInvoice(draft: InvoiceDraft): Promise<{ error: strin
       memo: draft.memo.trim(),
       collection: draft.collection,
     })
-    .select("id")
+    .select("id, contact_id, company_id")
     .single();
   if (error) throw error;
 
@@ -81,6 +81,11 @@ export async function createInvoice(draft: InvoiceDraft): Promise<{ error: strin
     await supabase.from("invoices").delete().eq("id", invoice.id);
     throw itemError;
   }
+  emailClients(workspace.id, invoice, {
+    topic: "invoices",
+    subject: `New invoice from ${workspace.name}`,
+    path: `/portal/invoices/${invoice.id}`,
+  });
   revalidatePath("/payments", "layout");
   redirect(`/payments/invoices/${invoice.id}`);
 }
@@ -98,6 +103,7 @@ export async function setInvoiceStatus(invoiceId: string, status: "paid" | "void
   if (error) throw error;
   if (data && status === "paid")
     await notify(ctx, {
+      topic: "payments",
       title: `${invoiceNumber(data.number)} was paid`,
       body: "Payment was recorded manually.",
       href: `/payments/invoices/${invoiceId}`,

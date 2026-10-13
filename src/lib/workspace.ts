@@ -50,3 +50,11 @@ export async function requireApp(key: AppKey): Promise<WorkspaceContext> {
   if (!context.installedApps.has(key)) redirect(`/apps?app=${key}`);
   return context;
 }
+
+/** Owners and admins only; members are sent back to `path` with an explanation. */
+export async function requireAdmin(path: string): Promise<WorkspaceContext> {
+  const context = await getWorkspace();
+  if (context.member.role === "member")
+    redirect(`${path}?error=${encodeURIComponent("Only workspace owners and admins can change this.")}`);
+  return context;
+}

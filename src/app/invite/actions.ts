@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { text } from "@/lib/form-data";
 import { getInvitePreview, parseInviteKind } from "@/lib/invites";
+import { appUrl } from "@/lib/stripe";
 import { supabaseKey, supabaseUrl } from "@/lib/supabase/env";
 import { createClient, type ServerSupabase } from "@/lib/supabase/server";
 
@@ -66,6 +67,19 @@ export async function signInAndAccept(token: string, form: FormData) {
   const { error } = await supabase.auth.signInWithPassword({ email: invite.email, password: text(form, "password") });
   if (error) back(token, error.message, "signin");
   await accept(supabase, token);
+}
+
+export async function emailSignInLink(token: string) {
+  const supabase = await createClient();
+  const invite = await validInvite(supabase, token);
+  if (!invite.linkSignIn) back(token, "Sign-in links aren't available for this invite. Use a password instead.");
+  const next = `/invite/${encodeURIComponent(token)}`;
+  const { error } = await supabase.auth.signInWithOtp({
+    email: invite.email,
+    options: { shouldCreateUser: true, emailRedirectTo: `${appUrl()}/auth/callback?next=${encodeURIComponent(next)}` },
+  });
+  if (error) back(token, error.message);
+  redirect(`${next}?sent=1`);
 }
 
 export async function signOutForInvite(token: string) {

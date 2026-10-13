@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { text } from "@/lib/form-data";
 import { fieldsToJson, parseAnswers, parseFields, type FormField } from "@/lib/forms";
-import { notify } from "@/lib/notify";
+import { emailClients, notify } from "@/lib/notify";
 import { requireApp } from "@/lib/workspace";
 
 export async function createForm(form: FormData) {
@@ -39,10 +39,17 @@ export async function saveForm(
 
 export async function requestForm(formId: string, form: FormData) {
   const { supabase, workspace } = await requireApp("forms");
-  const { error } = await supabase
+  const { data: request, error } = await supabase
     .from("form_requests")
-    .insert({ workspace_id: workspace.id, form_id: formId, contact_id: text(form, "contact_id") });
+    .insert({ workspace_id: workspace.id, form_id: formId, contact_id: text(form, "contact_id") })
+    .select("id, contact_id, form:forms(name)")
+    .single();
   if (error) throw error;
+  emailClients(workspace.id, { contact_id: request.contact_id, company_id: null }, {
+    topic: "forms",
+    subject: `${workspace.name} asked you to fill out ${request.form?.name ?? "a form"}`,
+    path: `/portal/forms/${request.id}`,
+  });
   revalidatePath(`/forms/${formId}`);
 }
 
@@ -65,7 +72,7 @@ export async function submitAnswers(requestId: string, form: FormData) {
     .eq("workspace_id", ctx.workspace.id)
     .eq("id", requestId);
   if (updateError) throw updateError;
-  await notify(ctx, { title: `New response to ${request.form.name}`, href: `/forms/${request.form.id}` });
+  await notify(ctx, { topic: "documents", title: `New response to ${request.form.name}`, href: `/forms/${request.form.id}` });
   revalidatePath("/", "layout");
   redirect(`/forms/${request.form.id}`);
 }

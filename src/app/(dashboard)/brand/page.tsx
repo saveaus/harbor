@@ -2,7 +2,7 @@ import { BrandMark } from "@/components/brand-mark";
 import { Button, Field, Input, PageHeader, SectionTitle } from "@/components/ui";
 import { logoUrl } from "@/lib/brand";
 import { getWorkspace } from "@/lib/workspace";
-import { removeLogo, setLogo, updateBrand } from "../settings/actions";
+import { removeLogo, setLogo, updateBrand } from "@/app/(settings)/settings/actions";
 import { LogoUploader } from "./logo-uploader";
 
 export default async function BrandPage() {

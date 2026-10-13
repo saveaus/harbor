@@ -15,6 +15,8 @@ export type InvitePreview = {
   email: string;
   kind: InviteKind;
   state: (typeof INVITE_STATES)[number];
+  /** The workspace lets this invitee sign in with an emailed one-time link. */
+  linkSignIn: boolean;
 };
 
 function member<T extends string>(values: readonly T[], value: string): T | undefined {
@@ -41,6 +43,7 @@ export async function getInvitePreview(supabase: ServerSupabase, token: string):
     email: row.email,
     kind,
     state,
+    linkSignIn: row.link_sign_in,
   };
 }
 

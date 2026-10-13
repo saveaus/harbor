@@ -63,3 +63,15 @@ export function intervalLabel(interval: string): string {
       return "One-time";
   }
 }
+
+export function priceLabel(amountCents: number, currency: string, interval: string): string {
+  const price = formatMoney(amountCents, currency);
+  switch (interval) {
+    case "month":
+      return `${price} / month`;
+    case "year":
+      return `${price} / year`;
+    default:
+      return price;
+  }
+}

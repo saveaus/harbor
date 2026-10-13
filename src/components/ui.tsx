@@ -213,10 +213,13 @@ export function Person({ name, detail }: { name: string; detail?: string | null 
   );
 }
 
-export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
+export function Field({ label, note, hint, children }: { label: string; note?: string; hint?: string; children: ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-[13px] font-medium text-ink">{label}</span>
+      <span className="mb-1.5 block text-[13px] font-medium text-ink">
+        {label}
+        {note ? <span className="font-normal text-ink-3"> - {note}</span> : null}
+      </span>
       {children}
       {hint ? <span className="mt-1 block text-[13px] text-ink-3">{hint}</span> : null}
     </label>

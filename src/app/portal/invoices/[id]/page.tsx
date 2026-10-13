@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { InvoiceLines } from "@/components/invoice-lines";
 import { Alert, Badge, Button } from "@/components/ui";
+import { settleReturnedSession } from "@/lib/checkout";
 import { formatDate, formatMoney } from "@/lib/format";
 import { invoiceNumber, invoiceStatus, invoiceTotal } from "@/lib/payments";
 import { requirePortalApp } from "@/lib/portal";
@@ -13,13 +14,14 @@ export default async function PortalInvoicePage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; session_id?: string }>;
 }) {
-  const [{ id }, { error: notice }, { supabase, workspace }] = await Promise.all([
+  const [{ id }, { error: notice, session_id: sessionId }, { supabase, workspace }] = await Promise.all([
     params,
     searchParams,
     requirePortalApp("payments"),
   ]);
+  const returned = sessionId ? await settleReturnedSession(workspace.id, sessionId) : null;
   const { data: invoice, error } = await supabase
     .from("invoices")
     .select("id, number, status, currency, due_date, created_at, paid_at, memo, invoice_items(id, description, quantity, unit_amount_cents)").eq("workspace_id", workspace.id)
@@ -55,6 +57,11 @@ export default async function PortalInvoicePage({
           ) : null}
         </div>
 
+        {returned === "paid" ? (
+          <div className="mt-4">
+            <Alert tone="success">Thanks, your payment went through.</Alert>
+          </div>
+        ) : null}
         {notice ? (
           <div className="mt-4">
             <Alert>{notice}</Alert>

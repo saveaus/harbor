@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { text } from "@/lib/form-data";
-import { notify } from "@/lib/notify";
+import { emailClients, notify } from "@/lib/notify";
 import { requireApp } from "@/lib/workspace";
 
 export async function createTemplate(form: FormData) {
@@ -38,14 +38,23 @@ export async function sendContract(form: FormData) {
     .eq("id", text(form, "template_id"))
     .single();
   if (error) throw error;
-  const { error: insertError } = await supabase.from("contracts").insert({
-    workspace_id: workspace.id,
-    template_id: template.id,
-    contact_id: text(form, "contact_id"),
-    name: template.name,
-    body: template.body,
-  });
+  const { data: contract, error: insertError } = await supabase
+    .from("contracts")
+    .insert({
+      workspace_id: workspace.id,
+      template_id: template.id,
+      contact_id: text(form, "contact_id"),
+      name: template.name,
+      body: template.body,
+    })
+    .select("id, contact_id")
+    .single();
   if (insertError) throw insertError;
+  emailClients(workspace.id, { contact_id: contract.contact_id, company_id: null }, {
+    topic: "contracts",
+    subject: `${workspace.name} sent you ${template.name} to sign`,
+    path: `/portal/contracts/${contract.id}`,
+  });
   revalidatePath("/contracts", "layout");
 }
 
@@ -62,6 +71,6 @@ export async function recordSignature(contractId: string, form: FormData) {
     .select("name")
     .maybeSingle();
   if (error) throw error;
-  if (data) await notify(ctx, { title: `${signedName} signed ${data.name}`, href: `/contracts/${contractId}` });
+  if (data) await notify(ctx, { topic: "documents", title: `${signedName} signed ${data.name}`, href: `/contracts/${contractId}` });
   revalidatePath("/", "layout");
 }

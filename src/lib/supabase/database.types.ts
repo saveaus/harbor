@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_keys: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          key_hash: string
+          last_used_at: string | null
+          name: string
+          prefix: string
+          revoked_at: string | null
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          key_hash: string
+          last_used_at?: string | null
+          name: string
+          prefix: string
+          revoked_at?: string | null
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          key_hash?: string
+          last_used_at?: string | null
+          name?: string
+          prefix?: string
+          revoked_at?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_keys_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       app_installs: {
         Row: {
           app_key: string
@@ -33,6 +77,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "app_installs_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audit_events: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_name: string
+          created_at: string
+          entity: string
+          entity_id: string | null
+          id: string
+          label: string
+          workspace_id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_name?: string
+          created_at?: string
+          entity: string
+          entity_id?: string | null
+          id?: string
+          label?: string
+          workspace_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_name?: string
+          created_at?: string
+          entity?: string
+          entity_id?: string | null
+          id?: string
+          label?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_events_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
@@ -1350,6 +1438,9 @@ export type Database = {
           created_at: string
           display_name: string
           email: string
+          email_documents: boolean
+          email_messages: boolean
+          email_payments: boolean
           role: Database["public"]["Enums"]["member_role"]
           user_id: string
           workspace_id: string
@@ -1358,6 +1449,9 @@ export type Database = {
           created_at?: string
           display_name?: string
           email?: string
+          email_documents?: boolean
+          email_messages?: boolean
+          email_payments?: boolean
           role?: Database["public"]["Enums"]["member_role"]
           user_id: string
           workspace_id: string
@@ -1366,6 +1460,9 @@ export type Database = {
           created_at?: string
           display_name?: string
           email?: string
+          email_documents?: boolean
+          email_messages?: boolean
+          email_payments?: boolean
           role?: Database["public"]["Enums"]["member_role"]
           user_id?: string
           workspace_id?: string
@@ -1382,8 +1479,15 @@ export type Database = {
       }
       workspaces: {
         Row: {
+          assistant_enabled: boolean
+          assistant_instructions: string
           brand_color: string
           companies_enabled: boolean
+          contact_email_contracts: boolean
+          contact_email_forms: boolean
+          contact_email_invoices: boolean
+          contact_email_messages: boolean
+          contact_link_sign_in: boolean
           country: string
           created_at: string
           currency: string
@@ -1400,8 +1504,15 @@ export type Database = {
           welcome_message: string
         }
         Insert: {
+          assistant_enabled?: boolean
+          assistant_instructions?: string
           brand_color?: string
           companies_enabled?: boolean
+          contact_email_contracts?: boolean
+          contact_email_forms?: boolean
+          contact_email_invoices?: boolean
+          contact_email_messages?: boolean
+          contact_link_sign_in?: boolean
           country?: string
           created_at?: string
           currency?: string
@@ -1418,8 +1529,15 @@ export type Database = {
           welcome_message?: string
         }
         Update: {
+          assistant_enabled?: boolean
+          assistant_instructions?: string
           brand_color?: string
           companies_enabled?: boolean
+          contact_email_contracts?: boolean
+          contact_email_forms?: boolean
+          contact_email_invoices?: boolean
+          contact_email_messages?: boolean
+          contact_link_sign_in?: boolean
           country?: string
           created_at?: string
           currency?: string
@@ -1453,6 +1571,7 @@ export type Database = {
           brand_color: string
           email: string
           kind: string
+          link_sign_in: boolean
           logo_path: string
           state: string
           workspace_name: string

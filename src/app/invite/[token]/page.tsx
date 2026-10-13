@@ -5,11 +5,11 @@ import { Field, Input, buttonClass } from "@/components/ui";
 import { logoUrl } from "@/lib/brand";
 import { getInvitePreview, type InvitePreview } from "@/lib/invites";
 import { createClient } from "@/lib/supabase/server";
-import { acceptInvite, createAccountAndAccept, signInAndAccept, signOutForInvite } from "../actions";
+import { acceptInvite, createAccountAndAccept, emailSignInLink, signInAndAccept, signOutForInvite } from "../actions";
 
 type InviteProps = {
   params: Promise<{ token: string }>;
-  searchParams: Promise<{ mode?: string; error?: string }>;
+  searchParams: Promise<{ mode?: string; error?: string; sent?: string }>;
 };
 
 const stateMessages: Record<Exclude<InvitePreview["state"], "valid">, string> = {
@@ -29,7 +29,7 @@ export default function InvitePage(props: InviteProps) {
 }
 
 async function InviteCard({ params, searchParams }: InviteProps) {
-  const [{ token }, { mode, error }] = await Promise.all([params, searchParams]);
+  const [{ token }, { mode, error, sent }] = await Promise.all([params, searchParams]);
   const supabase = await createClient();
   const [invite, { data: auth }] = await Promise.all([getInvitePreview(supabase, token), supabase.auth.getUser()]);
 
@@ -81,6 +81,15 @@ async function InviteCard({ params, searchParams }: InviteProps) {
       </Shell>
     );
 
+  if (sent)
+    return (
+      <Shell brand={brand} title="Check your inbox" error={error}>
+        <p className="text-[13px] text-ink-3">
+          We sent a sign-in link to {invite.email}. Open it on this device to join {invite.workspaceName}.
+        </p>
+      </Shell>
+    );
+
   const signingIn = mode === "signin";
   return (
     <Shell brand={brand} title={title} error={error}>
@@ -105,6 +114,13 @@ async function InviteCard({ params, searchParams }: InviteProps) {
           {signingIn ? "Sign in and accept" : "Create account"}
         </button>
       </form>
+      {invite.linkSignIn ? (
+        <form action={emailSignInLink.bind(null, token)} className="mt-3">
+          <button type="submit" className={buttonClass("secondary", "w-full")}>
+            Email me a sign-in link instead
+          </button>
+        </form>
+      ) : null}
       <p className="mt-4 text-center text-[13px] text-ink-3">
         {signingIn ? "New here? " : "Already have an account? "}
         <Link
