@@ -92,13 +92,13 @@ export default async function PaymentsOverview({ searchParams }: { searchParams:
         {payout.data?.charges_enabled ? (
           <p className="mt-3 text-[13px] text-ink-3">Available and pending funds in your connected account.</p>
         ) : (
-          <Link href="/settings/payout-account" className="mt-3 inline-flex items-center gap-1 text-[13px] text-link hover:underline">
+          <Link href="/settings/payout-account" className="mt-3 inline-flex items-center gap-1 text-[13px] text-link hover:text-ink">
             Connect bank <ArrowRight size={13} />
           </Link>
         )}
       </Card>
 
-      <TileSection title="Bill specific clients" description="Send a company or contact an invoice, or put them on a recurring plan.">
+      <TileSection title="Bill specific clients" description="Send a client or company an invoice, or put them on a recurring plan.">
         <Tile icon={<FileText size={16} />} title="Invoice for one-off work" href="/payments/invoices/new" cta="New invoice" />
         <Tile icon={<Repeat size={16} />} title="Recurring billing for ongoing work" href="/payments/subscriptions" cta="New subscription" />
       </TileSection>
@@ -151,14 +151,14 @@ function TileSection({ title, description, children }: { title: string; descript
 
 function Tile({ icon, title, href, cta }: { icon: ReactNode; title: string; href: string; cta: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-card border border-line-strong p-3">
+    <Link href={href} className="group flex items-center gap-3 rounded-card border border-line-strong p-3 transition-colors hover:bg-hover">
       <span className="flex size-10 shrink-0 items-center justify-center rounded-control border border-line bg-surface">{icon}</span>
       <div className="min-w-0">
         <div className="truncate text-[13px]">{title}</div>
-        <Link href={href} className="inline-flex items-center gap-1 text-[13px] text-link hover:underline">
+        <span className="inline-flex items-center gap-1 text-[13px] text-ink-3 group-hover:text-ink">
           {cta} <ArrowRight size={13} />
-        </Link>
+        </span>
       </div>
-    </div>
+    </Link>
   );
 }

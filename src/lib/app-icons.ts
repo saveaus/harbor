@@ -1,4 +1,4 @@
-import { BookOpen, ClipboardList, Clock, CreditCard, FileSignature, FileText, type LucideIcon } from "lucide-react";
+import { BookOpen, CalendarDays, ClipboardList, Clock, CreditCard, FileSignature, FileText, Landmark, ShieldCheck, type LucideIcon } from "lucide-react";
 import type { AppKey } from "@/lib/apps";
 
 export const APP_ICONS: Record<AppKey, LucideIcon> = {
@@ -8,4 +8,7 @@ export const APP_ICONS: Record<AppKey, LucideIcon> = {
   forms: ClipboardList,
   helpdesk: BookOpen,
   timetracker: Clock,
+  scheduling: CalendarDays,
+  finance: Landmark,
+  compliance: ShieldCheck,
 };

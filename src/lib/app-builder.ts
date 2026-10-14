@@ -17,14 +17,14 @@ export type GeneratedApp = {
 
 const schema = z.object({
   name: z.string().describe("Short app name, 2 to 4 words, title case."),
-  description: z.string().describe("One sentence describing what the app does for the team."),
+  description: z.string().describe("One sentence describing what the app does for staff."),
   permissions: z.array(z.enum(APP_PERMISSIONS)).describe("Only the permissions the code actually uses."),
   code: z.string().describe("The complete app: an HTML body fragment with inline <style> and <script>."),
   summary: z.string().describe("One or two sentences telling the user what you built or changed."),
 });
 
 const SYSTEM = `You build small internal tools for Harbor, a client portal that service businesses use to work with their clients.
-The team, not clients, uses these tools.
+Staff, not clients, use these tools.
 
 How apps run:
 - Your code is inserted into the <body> of a sandboxed iframe. Write an HTML fragment with inline <style> and <script>. No <html>, <head> or <body> tags.
@@ -35,7 +35,7 @@ How apps run:
   - harbor.storage.get(key) resolves to the stored JSON value or null.
   - harbor.storage.set(key, value) stores a JSON value of up to 64 KB.
   - harbor.storage.delete(key) and harbor.storage.list() (all keys).
-  Storage needs the "storage" permission. Keys are 1 to 100 characters. Storage is shared by the whole team.
+  Storage needs the "storage" permission. Keys are 1 to 100 characters. Storage is shared by all staff.
 - Calls can reject. Catch errors and show a readable message in the UI.
 
 How apps should look (match Harbor):

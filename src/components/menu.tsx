@@ -7,7 +7,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 export type MenuItem =
   | { label: ReactNode; href: string; danger?: boolean }
   | { label: ReactNode; onSelect: () => void; danger?: boolean }
-  | { label: ReactNode; action: () => Promise<void>; danger?: boolean };
+  | { label: ReactNode; action: () => Promise<void>; danger?: boolean; confirm?: string };
 
 export function Menu({
   trigger,
@@ -83,7 +83,13 @@ export function Menu({
                 {item.label}
               </button>
             ) : (
-              <form key={index} action={item.action}>
+              <form
+                key={index}
+                action={item.action}
+                onSubmit={(event) => {
+                  if (item.confirm && !window.confirm(item.confirm)) event.preventDefault();
+                }}
+              >
                 <button type="submit" role="menuitem" className={itemClass(item.danger)}>
                   {item.label}
                 </button>

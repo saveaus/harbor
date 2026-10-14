@@ -113,7 +113,7 @@ export async function updateAssistantSettings(form: FormData) {
 }
 
 export async function updateContactAuthentication(form: FormData) {
-  const path = "/settings/contact-authentication";
+  const path = "/settings/client-authentication";
   const { supabase, workspace } = await requireAdmin(path);
   const { error } = await supabase.from("workspaces").update({ contact_link_sign_in: on(form, "contact_link_sign_in") }).eq("id", workspace.id);
   if (error) throw error;
@@ -121,7 +121,7 @@ export async function updateContactAuthentication(form: FormData) {
 }
 
 export async function updateContactNotifications(form: FormData) {
-  const path = "/settings/contact-notifications";
+  const path = "/settings/client-notifications";
   const { supabase, workspace } = await requireAdmin(path);
   const { error } = await supabase
     .from("workspaces")

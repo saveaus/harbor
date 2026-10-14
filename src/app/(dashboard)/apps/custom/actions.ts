@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { generateApp } from "@/lib/app-builder";
 import { MAX_PROMPT_CHARS, parseBuilderModel } from "@/lib/app-builder-options";
 import { STARTER_CODE, methodPermission, parseBridgeMethod, parsePermissions } from "@/lib/custom-apps";
-import { contactName } from "@/lib/format";
+import { personName } from "@/lib/format";
 import { text } from "@/lib/form-data";
 import type { Json } from "@/lib/supabase/database.types";
 import { getWorkspace } from "@/lib/workspace";
@@ -178,7 +178,7 @@ export async function callCustomApp(appId: string, rawMethod: unknown, params: u
       return {
         result: {
           companies: companies.data,
-          contacts: contacts.data.map((c) => ({ id: c.id, name: contactName(c), email: c.email, companyId: c.company_id })),
+          contacts: contacts.data.map((c) => ({ id: c.id, name: personName(c), email: c.email, companyId: c.company_id })),
         },
       };
     }

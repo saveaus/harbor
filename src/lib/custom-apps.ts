@@ -2,7 +2,7 @@ export const APP_PERMISSIONS = ["clients:read", "storage"] as const;
 export type AppPermission = (typeof APP_PERMISSIONS)[number];
 
 export const permissionLabels: Record<AppPermission, { label: string; detail: string }> = {
-  "clients:read": { label: "Read clients", detail: "Names and emails of companies and contacts." },
+  "clients:read": { label: "Read clients", detail: "Names and emails of clients and companies." },
   storage: { label: "Store data", detail: "Save and load its own data, shared by everyone in this workspace." },
 };
 

@@ -1,47 +1,21 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport, isToolUIPart, getToolName, type UIMessage } from "ai";
-import { ArrowUp, Search, Sparkles, Square } from "lucide-react";
+import { DefaultChatTransport } from "ai";
+import { ArrowUp, Sparkles, Square } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { clsx } from "clsx";
 import { Alert } from "@/components/ui";
+import { AssistantParts } from "./assistant-message";
 
 const MAX_INPUT = 2000;
 
 const SUGGESTIONS = [
+  "Who doesn't have a driver's licence attached?",
   "Which invoices are still unpaid?",
   "Who hasn't signed their contract yet?",
-  "Summarize my latest conversation with a client",
-  "Draft a friendly payment reminder",
+  "Which staff credentials expire soon?",
 ];
-
-const TOOL_LABELS: Record<string, string> = {
-  findClients: "Searched clients",
-  listInvoices: "Checked invoices",
-  listContracts: "Checked contracts",
-  readConversation: "Read conversation",
-};
-
-function MessageParts({ message }: { message: UIMessage }) {
-  return message.parts.map((part, index) => {
-    if (part.type === "text")
-      return (
-        <p key={index} className="whitespace-pre-wrap">
-          {part.text}
-        </p>
-      );
-    if (isToolUIPart(part))
-      return (
-        <span key={index} className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-hover px-2 py-0.5 text-[12px] text-ink-3">
-          <Search size={11} />
-          {TOOL_LABELS[getToolName(part)] ?? "Looked something up"}
-          {part.state === "output-error" ? " (failed)" : null}
-        </span>
-      );
-    return null;
-  });
-}
 
 export function AssistantChat({ firstName }: { firstName: string }) {
   const [input, setInput] = useState("");
@@ -72,14 +46,14 @@ export function AssistantChat({ firstName }: { firstName: string }) {
                 <Sparkles size={18} />
               </span>
               <h1 className="mt-4 text-[24px] leading-8 font-medium text-ink">How can I help, {firstName}?</h1>
-              <p className="mt-1 text-[14px] text-ink-3">Ask about your clients, invoices, contracts and conversations.</p>
+              <p className="mt-1 text-[14px] text-ink-3">Ask about clients, staff, files, invoices, contracts and conversations.</p>
               <div className="mt-6 grid grid-cols-2 gap-2">
                 {SUGGESTIONS.map((suggestion) => (
                   <button
                     key={suggestion}
                     type="button"
                     onClick={() => submit(suggestion)}
-                    className="rounded-card border border-line-strong bg-canvas px-3 py-2.5 text-left text-[13px] text-ink hover:bg-surface"
+                    className="rounded-card border border-line-strong bg-canvas px-3 py-2.5 text-left text-[13px] text-ink hover:bg-hover"
                   >
                     {suggestion}
                   </button>
@@ -87,20 +61,24 @@ export function AssistantChat({ firstName }: { firstName: string }) {
               </div>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-8">
               {messages.map((message) => (
-                <div key={message.id} className={clsx("flex", message.role === "user" && "justify-end")}>
-                  <div
-                    className={clsx(
-                      "max-w-[85%] text-[14px] leading-6 text-ink",
-                      message.role === "user" && "rounded-card bg-hover px-3 py-2",
-                    )}
-                  >
-                    <MessageParts message={message} />
-                  </div>
+                <div key={message.id} className={clsx(message.role === "user" && "flex justify-end")}>
+                  {message.role === "user" ? (
+                    <p className="max-w-[85%] rounded-card bg-hover px-3 py-2 text-[14px] leading-6 font-medium text-ink">
+                      {message.parts
+                        .filter((part) => part.type === "text")
+                        .map((part) => part.text)
+                        .join("\n")}
+                    </p>
+                  ) : (
+                    <div className="w-full max-w-full">
+                      <AssistantParts message={message} disabled={busy} onAsk={submit} />
+                    </div>
+                  )}
                 </div>
               ))}
-              {status === "submitted" ? <p className="text-[13px] text-ink-3">Thinking…</p> : null}
+              {status === "submitted" ? <p className="text-[13px] text-ink-3">Looking that up…</p> : null}
               {error ? <Alert>Something went wrong. {error.message}</Alert> : null}
               <div ref={endRef} />
             </div>

@@ -61,11 +61,11 @@ export default async function ApiSettingsPage() {
       <SettingsSection title="Endpoints">
         <div className="space-y-3 text-[13px] text-ink-2">
           <p>
-            <code className="font-mono text-[12px]">GET /api/v1/contacts</code> lists contacts, 100 per page. Pass{" "}
+            <code className="font-mono text-[12px]">GET /api/v1/clients</code> lists clients, 100 per page. Pass{" "}
             <code className="font-mono text-[12px]">?after=&lt;id&gt;</code> with the last id to get the next page.
           </p>
           <pre className="overflow-x-auto rounded-card border border-line bg-surface p-3 font-mono text-[12px] text-ink">
-            {`curl ${appUrl()}/api/v1/contacts \\\n  -H "Authorization: Bearer hk_..."`}
+            {`curl ${appUrl()}/api/v1/clients \\\n  -H "Authorization: Bearer hk_..."`}
           </pre>
         </div>
       </SettingsSection>

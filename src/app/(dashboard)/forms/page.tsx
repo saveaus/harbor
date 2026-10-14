@@ -41,7 +41,7 @@ export default async function FormsPage() {
       <EmptyState
         icon={<ClipboardList size={18} />}
         title="Collect information from clients"
-        body="Build intake questionnaires and checklists, then request them from the contacts who need to fill them in."
+        body="Build intake questionnaires and checklists, then request them from the clients who need to fill them in."
         action={<NewFormDialog />}
       />
     );

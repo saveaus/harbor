@@ -5,9 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
 import {
+  BarChart3,
   Bell,
   Boxes,
   ChevronDown,
+  FileText,
+  HeartHandshake,
   Home,
   LayoutGrid,
   LogOut,
@@ -16,14 +19,14 @@ import {
   Settings,
   Sparkles,
   SlidersHorizontal,
-  SquareUser,
+  TriangleAlert,
   Users,
   Workflow,
   type LucideIcon,
 } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { APP_ICONS } from "@/lib/app-icons";
-import { APPS, APP_KEYS, type AppKey } from "@/lib/apps";
+import { APPS, LIBRARY_APP_KEYS, type AppKey } from "@/lib/apps";
 
 function NavItem({
   href,
@@ -32,6 +35,7 @@ function NavItem({
   badge,
   exact,
   muted,
+  match,
 }: {
   href: string;
   label: string;
@@ -39,16 +43,18 @@ function NavItem({
   badge?: number;
   exact?: boolean;
   muted?: boolean;
+  match?: string[];
 }) {
   const pathname = usePathname();
-  const active = pathname === href || (!exact && pathname.startsWith(`${href}/`));
+  const prefixes = match ?? [href];
+  const active = prefixes.some((path) => pathname === path || (!exact && pathname.startsWith(`${path}/`)));
   return (
     <Link
       href={href}
       className={clsx(
         "mx-2 flex h-[30px] items-center gap-3 rounded-nav px-2 text-[13px] tracking-[-0.05px] transition-colors",
         !muted || active ? "text-ink" : null,
-        active ? "bg-hover" : "hover:bg-line",
+        active ? "bg-hover" : "hover:bg-hover",
         muted && !active && "text-ink-3 hover:text-ink",
       )}
     >
@@ -89,9 +95,9 @@ export function Sidebar({
 }) {
   const installed = new Set(installedApps);
   return (
-    <aside className="flex w-[300px] shrink-0 flex-col border-r border-line bg-surface">
+    <aside className="flex w-[300px] shrink-0 flex-col border-r border-line bg-surface print:hidden">
       <div className="px-2 pt-5 pb-3.5">
-        <Link href="/settings/general" className="inline-flex h-8 max-w-full items-center gap-2.5 rounded-nav px-2 hover:bg-line">
+        <Link href="/settings/general" className="inline-flex h-8 max-w-full items-center gap-2.5 rounded-nav px-2 hover:bg-hover">
           <BrandMark name={workspaceName} color={brandColor} logoUrl={logoUrl} />
           <span className="truncate text-[13px] font-medium">{workspaceName}</span>
           <ChevronDown size={14} className="shrink-0" />
@@ -100,14 +106,30 @@ export function Sidebar({
 
       <nav className="flex-1 overflow-y-auto pb-4">
         {assistant ? <NavItem href="/assistant" label="Assistant" icon={Sparkles} /> : null}
-        <NavItem href="/crm" label="CRM" icon={SquareUser} />
-        <NavItem href="/team" label="Team" icon={Users} />
+        <NavItem href="/schedule" label="Schedule" icon={APP_ICONS.scheduling} />
+        <NavItem href="/clients" label="Clients" icon={HeartHandshake} />
+        <NavItem href="/staff" label="Staff" icon={Users} />
         <NavItem href="/notifications" label="Notifications" icon={Bell} badge={unreadNotifications} />
+
+        <Group label="Finance">
+          <NavItem href="/finance" label="Finance" icon={APP_ICONS.finance} />
+        </Group>
+
+        <Group label="Compliance">
+          <NavItem
+            href="/compliance/documents"
+            label="Documents"
+            icon={FileText}
+            match={["/compliance/documents", "/compliance/library"]}
+          />
+          <NavItem href="/compliance/incidents" label="Incidents" icon={TriangleAlert} />
+          <NavItem href="/compliance/reports" label="Reports" icon={BarChart3} />
+        </Group>
 
         <Group label="Apps">
           <NavItem href="/home" label="Home" icon={Home} />
           <NavItem href="/messages" label="Messages" icon={MessageSquare} />
-          {APP_KEYS.filter((key) => installed.has(key)).map((key) => (
+          {LIBRARY_APP_KEYS.filter((key) => installed.has(key)).map((key) => (
             <NavItem key={key} href={APPS[key].href} label={APPS[key].name} icon={APP_ICONS[key]} />
           ))}
           {customApps.map((app) => (
@@ -127,12 +149,12 @@ export function Sidebar({
         <Link
           href="/settings/general"
           aria-label="Settings"
-          className="flex size-7 items-center justify-center rounded-full text-ink hover:bg-line"
+          className="flex size-7 items-center justify-center rounded-full text-ink hover:bg-hover"
         >
           <Settings size={15} strokeWidth={2} />
         </Link>
         <form action={signOut}>
-          <button type="submit" aria-label="Sign out" className="flex size-7 items-center justify-center rounded-full text-ink hover:bg-line">
+          <button type="submit" aria-label="Sign out" className="flex size-7 items-center justify-center rounded-full text-ink hover:bg-hover">
             <LogOut size={15} strokeWidth={2} />
           </button>
         </form>

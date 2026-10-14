@@ -1,4 +1,6 @@
-export const APP_KEYS = ["files", "payments", "contracts", "forms", "helpdesk", "timetracker"] as const;
+export const LIBRARY_APP_KEYS = ["files", "payments", "contracts", "forms", "helpdesk", "timetracker"] as const;
+export const DEFAULT_APP_KEYS = ["scheduling", "finance", "compliance"] as const;
+export const APP_KEYS = [...LIBRARY_APP_KEYS, ...DEFAULT_APP_KEYS] as const;
 
 export type AppKey = (typeof APP_KEYS)[number];
 
@@ -33,7 +35,7 @@ export const APPS: Record<AppKey, AppDefinition> = {
     href: "/contracts",
     summary: "Reusable agreements clients sign online",
     detail:
-      "Write a template once, send it to any contact and track who has signed. Signed copies are kept with the client record.",
+      "Write a template once, send it to any client and track who has signed. Signed copies are kept with the client record.",
   },
   forms: {
     key: "forms",
@@ -41,7 +43,7 @@ export const APPS: Record<AppKey, AppDefinition> = {
     href: "/forms",
     summary: "Questionnaires you send to clients",
     detail:
-      "Build intake questionnaires and checklists, request them from specific contacts and review answers in one place.",
+      "Build intake questionnaires and checklists, request them from specific clients and review answers in one place.",
   },
   helpdesk: {
     key: "helpdesk",
@@ -57,7 +59,31 @@ export const APPS: Record<AppKey, AppDefinition> = {
     href: "/time",
     summary: "Log hours against clients and bill them",
     detail:
-      "Record time for each client, see totals by client and teammate, and turn unbilled billable hours into an invoice when Payments is installed.",
+      "Record time for each client, see totals by client and staff member, and turn unbilled billable hours into an invoice when Payments is installed.",
+  },
+  scheduling: {
+    key: "scheduling",
+    name: "Scheduling",
+    href: "/schedule",
+    summary: "Rosters, a shift pool and timesheets",
+    detail:
+      "Roster staff to clients week by week, offer open shifts to your team and approve timesheets for payroll. Every published shift feeds Finance automatically.",
+  },
+  finance: {
+    key: "finance",
+    name: "Finance",
+    href: "/finance",
+    summary: "Billables, bulk invoicing and NDIS claims",
+    detail:
+      "Completed shifts become billables priced from your price book. Invoice privately funded and plan-managed clients in bulk, and export NDIA-managed supports as a PRODA bulk claim.",
+  },
+  compliance: {
+    key: "compliance",
+    name: "Compliance",
+    href: "/compliance/documents",
+    summary: "Audit readiness, incidents, company documents and reports",
+    detail:
+      "See how many required items are current for the registration groups you hold, keep the incident register and company documents, and export reports. Policy and procedure templates live in a separate library.",
   },
 };
 

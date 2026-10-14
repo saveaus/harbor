@@ -14,11 +14,14 @@ const buttonStyles: Record<ButtonVariant, string> = {
 
 export function buttonClass(variant: ButtonVariant = "secondary", className?: string) {
   return clsx(
-    "inline-flex h-7 items-center justify-center gap-1.5 rounded-control px-2 text-[13px] font-medium whitespace-nowrap transition-colors disabled:pointer-events-none disabled:border-line-strong disabled:bg-canvas disabled:text-ink-4 [&_svg]:size-3",
+    "inline-flex h-7 cursor-pointer items-center justify-center gap-1.5 rounded-control px-2 text-[13px] font-medium whitespace-nowrap outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ink/15 disabled:pointer-events-none disabled:border-line-strong disabled:bg-canvas disabled:text-ink-4 [&_svg]:size-3",
     buttonStyles[variant],
     className,
   );
 }
+
+/** In-app text navigation. Chrome uses a color change, not an underline. */
+export const textLinkClass = "text-link hover:text-ink";
 
 export function Button({
   variant = "secondary",
@@ -164,7 +167,7 @@ export function Table({ columns, children }: { columns: TableColumn[]; children:
                 {typeof column === "string" ? (
                   column
                 ) : (
-                  <Link href={column.href} className="inline-flex items-center gap-1 hover:text-ink">
+                  <Link href={column.href} className="inline-flex items-center gap-1 text-heading hover:text-ink">
                     {column.label}
                     {column.sorted ? <span aria-hidden>{column.sorted === "asc" ? "↑" : "↓"}</span> : null}
                   </Link>
@@ -181,11 +184,15 @@ export function Table({ columns, children }: { columns: TableColumn[]; children:
 
 export function Row({ children, href }: { children: ReactNode; href?: string }) {
   return (
-    <tr className="group relative h-[50px] transition-colors hover:bg-surface">
+    <tr className="group relative h-[50px] transition-colors hover:bg-hover">
       {children}
       {href ? (
         <td className="absolute inset-0 p-0">
-          <Link href={href} className="absolute inset-0" aria-label="Open" />
+          <Link
+            href={href}
+            className="absolute inset-0 outline-none focus-visible:ring-2 focus-visible:ring-link focus-visible:ring-inset"
+            aria-label="Open"
+          />
         </td>
       ) : null}
     </tr>

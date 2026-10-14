@@ -7,6 +7,7 @@ import { portalHomeContent, sampleTasks } from "@/lib/portal-home";
 import { getWorkspace, type WorkspaceContext } from "@/lib/workspace";
 import { dismissGettingStarted } from "./actions";
 import { HomeEditor } from "./home-editor";
+import { OfficeHome } from "./office-home";
 
 const DEFAULT_BRAND_COLOR = "#2f6fed";
 
@@ -22,15 +23,15 @@ async function gettingStartedSteps({ supabase, workspace }: WorkspaceContext) {
 
   return [
     { label: "Customize your brand", href: "/brand", done: Boolean(workspace.logo_path) || workspace.brand_color !== DEFAULT_BRAND_COLOR },
-    { label: "Add your first client", href: "/crm", done: (contacts.count ?? 0) > 0 },
-    { label: "Invite a client to the portal", href: "/crm", done: (invited.count ?? 0) > 0 },
+    { label: "Add your first client", href: "/clients", done: (contacts.count ?? 0) > 0 },
+    { label: "Invite a client to the portal", href: "/clients", done: (invited.count ?? 0) > 0 },
     {
       label: "Personalize the client home",
       href: "/home",
       done: Boolean(workspace.portal_home_title || workspace.portal_home_body || workspace.portal_banner_path),
     },
     { label: "Set up payments", href: "/settings/payout-account", done: Boolean(payout.data?.charges_enabled) },
-    { label: "Invite a teammate", href: "/team", done: (members.count ?? 0) > 1 },
+    { label: "Invite a staff member", href: "/staff", done: (members.count ?? 0) > 1 },
   ];
 }
 
@@ -60,7 +61,7 @@ async function GettingStarted({ ctx }: { ctx: WorkspaceContext }) {
           <li key={step.label}>
             <Link
               href={step.href}
-              className="flex items-center gap-2 rounded-control border border-line px-3 py-2 text-[13px] hover:bg-surface"
+              className="flex items-center gap-2 rounded-control border border-line px-3 py-2 text-[13px] hover:bg-hover"
             >
               <span
                 className={clsx(
@@ -87,6 +88,7 @@ export default async function HomePage() {
       <PageHeader title="Home" />
       <div className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-[1200px] px-8 py-8">
+          <OfficeHome ctx={ctx} />
           {workspace.getting_started_dismissed ? null : <GettingStarted ctx={ctx} />}
           <HomeEditor
             workspaceId={workspace.id}

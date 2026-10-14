@@ -18,7 +18,7 @@ export default async function PortalHelpPage() {
           <ul className="mx-auto max-w-3xl px-6 py-6">
             {articles.map((article) => (
               <li key={article.id} className="border-b border-line last:border-0">
-                <Link href={`/portal/help/${article.id}`} className="flex items-center gap-3 rounded-control px-3 py-3 hover:bg-surface">
+                <Link href={`/portal/help/${article.id}`} className="flex items-center gap-3 rounded-control px-3 py-3 hover:bg-hover">
                   <div className="min-w-0 flex-1">
                     <div className="text-[13px] font-medium">{article.title}</div>
                     <div className="truncate text-[12px] text-ink-3">{article.body.slice(0, 160)}</div>

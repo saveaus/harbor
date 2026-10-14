@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { signOut } from "@/app/auth-actions";
 import { brandAccentStyle, brandAssetUrl } from "@/lib/brand";
-import { contactName } from "@/lib/format";
+import { personName } from "@/lib/format";
 import { getPortal } from "@/lib/portal";
 import { PortalNav } from "./portal-nav";
 
@@ -24,7 +24,7 @@ async function PortalShell({ children }: { children: React.ReactNode }) {
           sidebarColor: workspace.portal_sidebar_color,
           logoUrl: brandAssetUrl(workspace.logo_path),
         }}
-        viewer={{ name: contactName(contact), detail: company?.name ?? contact.email }}
+        viewer={{ name: personName(contact), detail: company?.name ?? contact.email }}
         installedApps={[...installedApps]}
         channels={{ messages: channels.messages !== null, files: channels.files !== null }}
         signOut={signOut}

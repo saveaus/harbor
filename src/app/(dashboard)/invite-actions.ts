@@ -9,42 +9,10 @@ export type InviteResult = { token: string } | { error: string };
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/** Creating a new link replaces any earlier pending link for the same person. */
-export async function inviteContact(contactId: string): Promise<InviteResult> {
-  const ctx = await getWorkspace();
-  const { supabase, workspace } = ctx;
-  const { data: contact, error } = await supabase
-    .from("contacts")
-    .select("id, email, status, user_id")
-    .eq("workspace_id", workspace.id)
-    .eq("id", contactId)
-    .maybeSingle();
-  if (error) throw error;
-  if (!contact) return { error: "This contact no longer exists." };
-  if (contact.user_id) return { error: "This contact already has portal access." };
-
-  const revoked = await supabase
-    .from("invites")
-    .update({ revoked_at: new Date().toISOString() })
-    .eq("workspace_id", workspace.id)
-    .eq("contact_id", contact.id)
-    .is("accepted_at", null)
-    .is("revoked_at", null);
-  if (revoked.error) throw revoked.error;
-
-  const token = await createInvite(ctx, { kind: "client", email: contact.email, contactId: contact.id });
-  if (contact.status === "not_invited") {
-    const updated = await supabase.from("contacts").update({ status: "invited" }).eq("id", contact.id);
-    if (updated.error) throw updated.error;
-  }
-  revalidatePath("/crm", "layout");
-  return { token };
-}
-
 export async function inviteTeammate(form: FormData): Promise<InviteResult> {
   const ctx = await getWorkspace();
   const { supabase, workspace, member } = ctx;
-  if (member.role === "member") return { error: "Only owners and admins can invite teammates." };
+  if (member.role === "member") return { error: "Only owners and admins can invite staff." };
 
   const email = text(form, "email").toLowerCase();
   if (!EMAIL.test(email)) return { error: "Enter a valid email address." };
@@ -57,7 +25,7 @@ export async function inviteTeammate(form: FormData): Promise<InviteResult> {
     .eq("workspace_id", workspace.id)
     .eq("email", email);
   if (existing.error) throw existing.error;
-  if (existing.count) return { error: `${email} is already on the team.` };
+  if (existing.count) return { error: `${email} already has workspace access.` };
 
   const revoked = await supabase
     .from("invites")
@@ -69,8 +37,13 @@ export async function inviteTeammate(form: FormData): Promise<InviteResult> {
     .is("revoked_at", null);
   if (revoked.error) throw revoked.error;
 
+  const staff = await supabase
+    .from("staff")
+    .upsert({ workspace_id: workspace.id, email }, { onConflict: "workspace_id,email", ignoreDuplicates: true });
+  if (staff.error) throw staff.error;
+
   const token = await createInvite(ctx, { kind: "team", email, role });
-  revalidatePath("/team");
+  revalidatePath("/staff", "layout");
   return { token };
 }
 
@@ -83,6 +56,6 @@ export async function revokeInvite(inviteId: string) {
     .eq("id", inviteId)
     .is("accepted_at", null);
   if (error) throw error;
-  revalidatePath("/team");
-  revalidatePath("/crm", "layout");
+  revalidatePath("/staff", "layout");
+  revalidatePath("/clients", "layout");
 }

@@ -22,8 +22,8 @@ export default async function GeneralSettingsPage() {
         <SettingsSection title="Client organisation">
           <SwitchRow
             name="companies_enabled"
-            label="Group contacts into companies"
-            description="Contacts in the same company share one conversation and one file space."
+            label="Group clients into companies"
+            description="Clients in the same company share one conversation and one file space."
             defaultChecked={workspace.companies_enabled}
           />
         </SettingsSection>

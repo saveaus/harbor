@@ -10,8 +10,8 @@ export default async function AssistantSettingsPage({ searchParams }: { searchPa
   return (
     <>
       <SettingsTitle title="Assistant">
-        The assistant answers questions about your clients, invoices, contracts and messages, and drafts replies. It only reads
-        data your team can already see.
+        The assistant answers questions about your clients, staff, files, credentials, invoices, contracts and messages, and
+        drafts replies. It only reads data staff can already see.
       </SettingsTitle>
       <SettingsNotice searchParams={searchParams} />
       <form action={updateAssistantSettings}>
@@ -22,7 +22,7 @@ export default async function AssistantSettingsPage({ searchParams }: { searchPa
           <SwitchRow
             name="assistant_enabled"
             label="Turn on the assistant"
-            description="Shows the assistant to everyone on your team."
+            description="Shows the assistant to all staff."
             defaultChecked={workspace.assistant_enabled}
             disabled={locked}
           />
@@ -34,7 +34,7 @@ export default async function AssistantSettingsPage({ searchParams }: { searchPa
               rows={6}
               maxLength={2000}
               defaultValue={workspace.assistant_instructions}
-              placeholder="We're a bookkeeping firm. Keep replies short and friendly, and sign off with the team's first name."
+              placeholder="We're a bookkeeping firm. Keep replies short and friendly, and sign off with your first name."
               disabled={locked}
             />
           </Field>

@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import { ChevronLeft, Pencil, Send } from "lucide-react";
 import { FormDialog } from "@/components/dialog";
 import { Badge, ButtonLink, Card, Field, Select } from "@/components/ui";
-import { listContactOptions } from "@/lib/contacts";
-import { contactName, formatDate } from "@/lib/format";
+import { listClientOptions } from "@/lib/clients";
+import { personName, formatDate } from "@/lib/format";
 import { fieldTypeLabels, parseFields, readAnswer } from "@/lib/forms";
 import { requireApp } from "@/lib/workspace";
 import { requestForm } from "../actions";
@@ -19,7 +19,7 @@ export default async function FormPage({ params }: { params: Promise<{ id: strin
       .eq("workspace_id", ctx.workspace.id)
       .eq("id", id)
       .maybeSingle(),
-    listContactOptions(ctx),
+    listClientOptions(ctx),
   ]);
   if (formResult.error) throw formResult.error;
   const form = formResult.data;
@@ -49,11 +49,11 @@ export default async function FormPage({ params }: { params: Promise<{ id: strin
                 </>
               }
               title={`Request "${form.name}"`}
-              description="The contact will see it in their portal until they submit it."
+              description="The client will see it in their portal until they submit it."
               action={requestForm.bind(null, form.id)}
               submitLabel="Send request"
             >
-              <Field label="Contact">
+              <Field label="Client">
                 <Select name="contact_id" required>
                   {contacts.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -72,7 +72,7 @@ export default async function FormPage({ params }: { params: Promise<{ id: strin
         {fields.length === 0 ? (
           <p className="px-4 py-6 text-center text-[13px] text-ink-3">
             No questions yet.{" "}
-            <Link href={`/forms/${form.id}/edit`} className="font-medium text-link hover:underline">
+            <Link href={`/forms/${form.id}/edit`} className="font-medium text-link hover:text-ink">
               Add some
             </Link>
             .
@@ -101,7 +101,7 @@ export default async function FormPage({ params }: { params: Promise<{ id: strin
           {requests.map((r) => (
             <Card key={r.id}>
               <div className="flex items-center gap-3 px-4 py-3">
-                <span className="flex-1 text-[13px] font-medium">{r.contact ? contactName(r.contact) : "Deleted contact"}</span>
+                <span className="flex-1 text-[13px] font-medium">{r.contact ? personName(r.contact) : "Deleted contact"}</span>
                 <span className="text-[12px] text-ink-3">
                   {r.status === "completed" ? `Submitted ${formatDate(r.completed_at)}` : `Requested ${formatDate(r.sent_at)}`}
                 </span>
@@ -110,7 +110,7 @@ export default async function FormPage({ params }: { params: Promise<{ id: strin
                 ) : (
                   <>
                     <Badge tone="warning">Pending</Badge>
-                    <Link href={`/forms/responses/${r.id}`} className="text-[12px] font-medium text-link hover:underline">
+                    <Link href={`/forms/responses/${r.id}`} className="text-[12px] font-medium text-link hover:text-ink">
                       Enter answers
                     </Link>
                   </>

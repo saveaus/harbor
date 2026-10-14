@@ -4,10 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { UploadedFile } from "@/components/upload-button";
 import { text } from "@/lib/form-data";
-import { contactName } from "@/lib/format";
+import { personName } from "@/lib/format";
 import { parseAnswers, parseFields } from "@/lib/forms";
 import { startInvoiceCheckout } from "@/lib/checkout";
-import { emailTeam } from "@/lib/notify";
+import { emailStaff } from "@/lib/notify";
 import { getPortal, requirePortalApp } from "@/lib/portal";
 
 function withError(path: string, message: string): never {
@@ -21,9 +21,9 @@ export async function sendPortalMessage(form: FormData) {
   if (!channels.messages) throw new Error("No conversation is set up for you yet");
   const { error } = await supabase.rpc("portal_send_message", { target_channel: channels.messages, message_body: body });
   if (error) throw error;
-  emailTeam(workspace.id, {
+  emailStaff(workspace.id, {
     topic: "messages",
-    title: `New message from ${contactName(contact)}`,
+    title: `New message from ${personName(contact)}`,
     body: body.length > 280 ? `${body.slice(0, 277)}...` : body,
     href: `/messages/${channels.messages}`,
   });
@@ -79,7 +79,7 @@ export async function signPortalContract(contractId: string, form: FormData) {
   if (form.get("agree") !== "on") withError(path, "Tick the box to confirm you agree.");
   const { error } = await supabase.rpc("portal_sign_contract", { target_contract: contractId, signer_name: text(form, "name") });
   if (error) withError(path, error.message);
-  emailTeam(workspace.id, { topic: "documents", title: `${contactName(contact)} signed a contract`, href: `/contracts/${contractId}` });
+  emailStaff(workspace.id, { topic: "documents", title: `${personName(contact)} signed a contract`, href: `/contracts/${contractId}` });
   revalidatePath("/portal", "layout");
   redirect(path);
 }
@@ -104,7 +104,7 @@ export async function submitPortalForm(requestId: string, form: FormData) {
   }
   const submitted = await supabase.rpc("portal_submit_form", { target_request: requestId, submitted: answers });
   if (submitted.error) withError(path, submitted.error.message);
-  emailTeam(workspace.id, { topic: "documents", title: `${contactName(contact)} submitted a form`, href: "/forms" });
+  emailStaff(workspace.id, { topic: "documents", title: `${personName(contact)} submitted a form`, href: "/forms" });
   revalidatePath("/portal", "layout");
   redirect("/portal/forms?submitted=1");
 }

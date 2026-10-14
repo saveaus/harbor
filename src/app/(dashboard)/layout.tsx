@@ -48,7 +48,7 @@ async function DashboardShell({ children }: { children: React.ReactNode }) {
 function ShellSkeleton() {
   return (
     <>
-      <aside className="w-[300px] shrink-0 border-r border-line bg-surface p-3">
+      <aside className="w-[300px] shrink-0 border-r border-line bg-surface p-3 print:hidden">
         <div className="h-6 w-32 animate-pulse rounded-control bg-hover" />
         <div className="mt-6 space-y-2">
           {Array.from({ length: 6 }, (_, i) => (

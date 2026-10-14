@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { redirect } from "next/navigation";
-import { parseAppKey, type AppKey } from "@/lib/apps";
+import { DEFAULT_APP_KEYS, parseAppKey, type AppKey } from "@/lib/apps";
 import { createClient, type ServerSupabase } from "@/lib/supabase/server";
 import type { Tables } from "@/lib/supabase/database.types";
 
@@ -55,7 +55,7 @@ export const getPortal = cache(async (): Promise<PortalContext> => {
   if (installs.error) throw installs.error;
   if (channelRows.error) throw channelRows.error;
 
-  const installedApps = new Set<AppKey>();
+  const installedApps = new Set<AppKey>(DEFAULT_APP_KEYS);
   for (const install of installs.data) {
     const key = parseAppKey(install.app_key);
     if (key) installedApps.add(key);

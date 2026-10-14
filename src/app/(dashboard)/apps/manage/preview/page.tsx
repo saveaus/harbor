@@ -2,13 +2,13 @@ import { PortalHomeView, PortalPreviewFrame, PortalSidebar } from "@/components/
 import { Button, ButtonLink, EmptyState, PageHeader, Select } from "@/components/ui";
 import { Eye } from "lucide-react";
 import { brandAccentStyle, brandAssetUrl } from "@/lib/brand";
-import { contactName } from "@/lib/format";
+import { personName } from "@/lib/format";
 import { portalApps } from "@/lib/portal-apps";
 import { loadPortalTasks, portalHomeContent } from "@/lib/portal-home";
 import { getWorkspace } from "@/lib/workspace";
 
-export default async function ContactPreviewPage({ searchParams }: { searchParams: Promise<{ contact?: string }> }) {
-  const [{ contact: requested }, ctx] = await Promise.all([searchParams, getWorkspace()]);
+export default async function ClientPreviewPage({ searchParams }: { searchParams: Promise<{ client?: string }> }) {
+  const [{ client: requested }, ctx] = await Promise.all([searchParams, getWorkspace()]);
   const { supabase, workspace, installedApps } = ctx;
 
   const { data: contacts, error } = await supabase
@@ -22,12 +22,12 @@ export default async function ContactPreviewPage({ searchParams }: { searchParam
   if (!contact)
     return (
       <>
-        <PageHeader title="Contact preview" />
+        <PageHeader title="Client preview" />
         <EmptyState
           icon={<Eye size={16} />}
           title="No clients to preview"
           body="Add a client to see the portal the way they will."
-          action={<ButtonLink href="/crm">Go to CRM</ButtonLink>}
+          action={<ButtonLink href="/clients">Go to Clients</ButtonLink>}
         />
       </>
     );
@@ -51,15 +51,15 @@ export default async function ContactPreviewPage({ searchParams }: { searchParam
 
   return (
     <>
-      <PageHeader title="Contact preview" actions={<ButtonLink href="/apps/manage">Back to App Library</ButtonLink>} />
+      <PageHeader title="Client preview" actions={<ButtonLink href="/apps/manage">Back to App Library</ButtonLink>} />
       <div className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-[1100px] px-8 py-6">
           <form className="mb-4 flex items-center gap-2">
             <span className="text-[13px] text-ink-3">Viewing as</span>
-            <Select name="contact" defaultValue={contact.id} className="max-w-80">
+            <Select name="client" defaultValue={contact.id} className="max-w-80">
               {contacts.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {contactName(c)}
+                  {personName(c)}
                   {c.company ? ` (${c.company.name})` : ""}
                 </option>
               ))}
@@ -72,7 +72,7 @@ export default async function ContactPreviewPage({ searchParams }: { searchParam
                 brand={brand}
                 apps={apps}
                 isActive={(href) => href === "/portal"}
-                viewer={{ name: contactName(contact), detail: contact.company?.name ?? contact.email }}
+                viewer={{ name: personName(contact), detail: contact.company?.name ?? contact.email }}
               />
               <div className="min-w-0 flex-1 overflow-hidden bg-canvas">
                 <div className="flex h-[61px] items-center border-b border-line px-6 text-[14px] font-medium text-ink">Home</div>

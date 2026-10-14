@@ -43,8 +43,8 @@ const groups: { label: string; items: { href: string; label: string; icon: Lucid
   {
     label: "Client experience",
     items: [
-      { href: "/settings/contact-authentication", label: "Contact authentication", icon: Lock },
-      { href: "/settings/contact-notifications", label: "Contact notifications", icon: BellRing },
+      { href: "/settings/client-authentication", label: "Client authentication", icon: Lock },
+      { href: "/settings/client-notifications", label: "Client notifications", icon: BellRing },
       { href: "/settings/custom-domains", label: "Custom domains", icon: Globe },
     ],
   },
@@ -57,7 +57,7 @@ export function SettingsSidebar() {
   return (
     <aside className="flex w-[300px] shrink-0 flex-col border-r border-line bg-surface">
       <nav className="flex-1 overflow-y-auto pt-3 pb-4">
-        <Link href="/home" className="mx-2 flex h-[30px] items-center gap-2 rounded-nav px-2 text-[13px] text-ink hover:bg-line">
+        <Link href="/home" className="mx-2 flex h-[30px] items-center gap-2 rounded-nav px-2 text-[13px] text-ink hover:bg-hover">
           <ChevronLeft size={14} strokeWidth={2} /> Go back
         </Link>
         {groups.map((group) => (
@@ -69,7 +69,7 @@ export function SettingsSidebar() {
                 href={href}
                 className={clsx(
                   "mx-2 flex h-[30px] items-center gap-3 rounded-nav px-2 text-[13px] tracking-[-0.05px] text-ink transition-colors",
-                  pathname === href ? "bg-hover" : "hover:bg-line",
+                  pathname === href ? "bg-hover" : "hover:bg-hover",
                 )}
               >
                 <Icon size={14} strokeWidth={2} className="shrink-0" />

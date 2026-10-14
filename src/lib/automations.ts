@@ -6,7 +6,7 @@ export type AutomationAction = (typeof AUTOMATION_ACTIONS)[number];
 
 /** `detail` is what {{detail}} expands to for each trigger. */
 export const triggerLabels: Record<AutomationTrigger, { label: string; detail: string }> = {
-  contact_created: { label: "A contact is added", detail: "their email" },
+  contact_created: { label: "A client is added", detail: "their email" },
   invoice_paid: { label: "An invoice is paid", detail: "the invoice number" },
   contract_signed: { label: "A contract is signed", detail: "the contract name" },
   form_completed: { label: "A form is completed", detail: "the form name" },
@@ -15,7 +15,7 @@ export const triggerLabels: Record<AutomationTrigger, { label: string; detail: s
 
 export const actionLabels: Record<AutomationAction, string> = {
   send_message: "Message the client",
-  notify_team: "Notify the team",
+  notify_team: "Notify staff",
 };
 
 function member<T extends string>(values: readonly T[], value: string): T | undefined {

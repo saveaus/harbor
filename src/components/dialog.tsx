@@ -14,6 +14,7 @@ export function FormDialog({
   description,
   action,
   submitLabel,
+  extraSubmit,
   children,
 }: {
   trigger?: ReactNode;
@@ -23,6 +24,7 @@ export function FormDialog({
   description?: string;
   action: (form: FormData) => Promise<void>;
   submitLabel: string;
+  extraSubmit?: { name: string; value: string; label: string };
   children: ReactNode;
 }) {
   const ownRef = useRef<HTMLDialogElement>(null);
@@ -67,6 +69,11 @@ export function FormDialog({
             <button type="button" className={buttonClass("secondary")} onClick={() => ref.current?.close()}>
               Cancel
             </button>
+            {extraSubmit ? (
+              <button type="submit" name={extraSubmit.name} value={extraSubmit.value} className={buttonClass("secondary")}>
+                {extraSubmit.label}
+              </button>
+            ) : null}
             <button type="submit" className={buttonClass("primary")}>
               {submitLabel}
             </button>

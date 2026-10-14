@@ -6,7 +6,7 @@ import { Menu } from "@/components/menu";
 import { RecordRail } from "@/components/record-rail";
 import { SearchToggle } from "@/components/search-toggle";
 import { ActionCell, Cell, EmptyState, Row, Table, buttonClass } from "@/components/ui";
-import { getChannel } from "@/lib/channels";
+import { channelClientHref, getChannel } from "@/lib/channels";
 import { formatBytes, formatDate } from "@/lib/format";
 import { requireApp } from "@/lib/workspace";
 import { addLink, createFolder, deleteItem, downloadUrl, recordUpload } from "../actions";
@@ -46,7 +46,7 @@ export default async function FileSpacePage({
     trail.unshift({ id: node.id, name: node.name });
 
   const base = `/files/${id}`;
-  const recordHref = channel.company_id ? `/crm/companies/${channel.company_id}` : `/crm/contacts/${channel.contact_id}`;
+  const recordHref = channelClientHref(channel);
   const crumbs = [{ href: base, name: `${channel.title}'s files` }, ...trail.map((c) => ({ href: `${base}?folder=${c.id}`, name: c.name }))];
   const newMenu = (
     <NewItemMenu
@@ -66,12 +66,14 @@ export default async function FileSpacePage({
           <span className="truncate text-[13px] font-medium text-black">{channel.title}</span>
           <div className="flex items-center gap-2">
             <SearchToggle base={base} q={q} />
-            <Menu
-              label="File channel options"
-              triggerClassName={buttonClass("secondary", "w-7 px-0")}
-              trigger={<MoreHorizontal size={14} />}
-              items={[{ label: channel.company_id ? "Open company" : "Open contact", href: recordHref }]}
-            />
+            {recordHref ? (
+              <Menu
+                label="File channel options"
+                triggerClassName={buttonClass("secondary", "w-7 px-0")}
+                trigger={<MoreHorizontal size={14} />}
+                items={[{ label: "Open client", href: recordHref }]}
+              />
+            ) : null}
           </div>
         </header>
 
@@ -83,7 +85,7 @@ export default async function FileSpacePage({
                 href={crumb.href}
                 className={clsx(
                   "inline-flex h-7 items-center rounded-full px-3 text-[13px] font-medium",
-                  index === crumbs.length - 1 ? "bg-hover text-ink" : "text-ink-3 hover:bg-surface hover:text-ink",
+                  index === crumbs.length - 1 ? "bg-hover text-ink" : "text-ink-3 hover:bg-hover hover:text-ink",
                 )}
               >
                 {crumb.name}
@@ -147,12 +149,9 @@ export default async function FileSpacePage({
           )}
         </div>
       </div>
-      <RecordRail
-        name={channel.title}
-        detailsLabel={channel.company_id ? "Company details" : "Contact details"}
-        detailsHref={recordHref}
-        notesHref={`${recordHref}?panel=notes`}
-      />
+      {recordHref ? (
+        <RecordRail name={channel.title} detailsLabel="Client details" detailsHref={`${recordHref}?panel=details`} notesHref={`${recordHref}?panel=notes`} />
+      ) : null}
     </>
   );
 }

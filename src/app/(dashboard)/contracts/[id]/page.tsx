@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { Badge, Button, Card, Field, Input } from "@/components/ui";
-import { contactName, formatDate } from "@/lib/format";
+import { personName, formatDate } from "@/lib/format";
 import { requireApp } from "@/lib/workspace";
 import { recordSignature } from "../actions";
 import { contractStatus } from "@/lib/contracts";
@@ -29,7 +29,7 @@ export default async function ContractPage({ params }: { params: Promise<{ id: s
         {contract.name} <Badge tone={status.tone}>{status.label}</Badge>
       </h1>
       <p className="mt-0.5 text-[13px] text-ink-3">
-        Sent to {contract.contact ? contactName(contract.contact) : "—"} on {formatDate(contract.sent_at)}
+        Sent to {contract.contact ? personName(contract.contact) : "—"} on {formatDate(contract.sent_at)}
         {contract.signed_at ? ` · Signed by ${contract.signed_name} on ${formatDate(contract.signed_at)}` : ""}
       </p>
 

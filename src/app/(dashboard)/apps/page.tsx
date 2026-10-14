@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Boxes } from "lucide-react";
 import { Button, PageHeader, buttonClass } from "@/components/ui";
-import { APPS, APP_KEYS } from "@/lib/apps";
+import { APPS, LIBRARY_APP_KEYS } from "@/lib/apps";
 import { getWorkspace } from "@/lib/workspace";
 import { installApp } from "./actions";
 import { AddAppBuilder } from "./add-app-builder";
@@ -27,10 +27,10 @@ export default async function AddAppPage() {
 
           <h2 className="mt-12 text-[16px] font-medium text-ink">Browse all apps</h2>
           <ul className="mt-4 grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
-            {APP_KEYS.map((key) => {
+            {[...LIBRARY_APP_KEYS].sort((a, b) => Number(installedApps.has(a)) - Number(installedApps.has(b))).map((key) => {
               const app = APPS[key];
               return (
-                <li key={key} className="flex items-start gap-3 rounded-card border border-line-strong p-4">
+                <li key={key} className="flex items-start gap-3 rounded-card border border-line-strong p-4 transition-colors hover:bg-hover">
                   <div className="min-w-0 flex-1">
                     <div className="text-[13px] font-medium text-ink">{app.name}</div>
                     <p className="mt-0.5 text-[13px] text-ink-3">{app.summary}</p>

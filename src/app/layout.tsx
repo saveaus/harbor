@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Harbor",
+  title: { template: "%s · Harbor", default: "Harbor" },
   description: "A client portal for service businesses",
 };
 

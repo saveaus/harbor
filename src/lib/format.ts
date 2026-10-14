@@ -14,6 +14,17 @@ export function formatDate(value: string | null): string {
   }).format(new Date(value));
 }
 
+/** Formats a Postgres `date` (`YYYY-MM-DD`) without shifting it into the viewer's time zone. */
+export function formatDay(value: string | null): string {
+  if (!value) return "—";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${value}T00:00:00Z`));
+}
+
 export function formatRelative(value: string): string {
   const seconds = Math.round((Date.now() - new Date(value).getTime()) / 1000);
   if (seconds < 60) return "now";
@@ -48,9 +59,9 @@ export function initials(name: string): string {
     .join("");
 }
 
-export function contactName(contact: { first_name: string; last_name: string; email: string }): string {
-  const name = `${contact.first_name} ${contact.last_name}`.trim();
-  return name || contact.email;
+export function personName(person: { first_name: string; last_name: string; email: string }): string {
+  const name = `${person.first_name} ${person.last_name}`.trim();
+  return name || person.email;
 }
 
 export function intervalLabel(interval: string): string {

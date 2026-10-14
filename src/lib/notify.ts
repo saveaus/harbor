@@ -4,46 +4,46 @@ import { appUrl } from "@/lib/stripe";
 import { getAdminClient, type AdminSupabase } from "@/lib/supabase/admin";
 import type { WorkspaceContext } from "@/lib/workspace";
 
-export type TeamTopic = "messages" | "payments" | "documents";
-export type TeamNotification = { topic: TeamTopic; title: string; body?: string; href: string };
+export type StaffTopic = "messages" | "payments" | "documents";
+export type StaffNotification = { topic: StaffTopic; title: string; body?: string; href: string };
 
-export type ContactTopic = "messages" | "invoices" | "contracts" | "forms";
-export type ContactNotification = { topic: ContactTopic; subject: string; body?: string; path: string };
+export type ClientTopic = "messages" | "invoices" | "contracts" | "forms";
+export type ClientNotification = { topic: ClientTopic; subject: string; body?: string; path: string };
 export type Recipient = { contact_id: string | null; company_id: string | null };
 
-const TEAM_PREFERENCE = { messages: "email_messages", payments: "email_payments", documents: "email_documents" } as const;
-const CONTACT_SETTING = {
+const STAFF_PREFERENCE = { messages: "email_messages", payments: "email_payments", documents: "email_documents" } as const;
+const CLIENT_SETTING = {
   messages: "contact_email_messages",
   invoices: "contact_email_invoices",
   contracts: "contact_email_contracts",
   forms: "contact_email_forms",
 } as const;
 
-function notificationRow(workspaceId: string, { title, body, href }: TeamNotification) {
+function notificationRow(workspaceId: string, { title, body, href }: StaffNotification) {
   return { workspace_id: workspaceId, title, body, href };
 }
 
 /** Records an in-app notification as the signed-in member, then emails the team. */
-export async function notify(ctx: WorkspaceContext, notification: TeamNotification) {
+export async function notify(ctx: WorkspaceContext, notification: StaffNotification) {
   const { error } = await ctx.supabase.from("notifications").insert(notificationRow(ctx.workspace.id, notification));
   if (error) throw error;
-  emailTeam(ctx.workspace.id, notification);
+  emailStaff(ctx.workspace.id, notification);
 }
 
 /** Records a notification for events with no signed-in member, such as webhooks and client actions. */
-export async function notifyAsSystem(admin: AdminSupabase, workspaceId: string, notification: TeamNotification) {
+export async function notifyAsSystem(admin: AdminSupabase, workspaceId: string, notification: StaffNotification) {
   const { error } = await admin.from("notifications").insert(notificationRow(workspaceId, notification));
   if (error) throw error;
-  emailTeam(workspaceId, notification);
+  emailStaff(workspaceId, notification);
 }
 
 /** Emails team members who opted into this topic; for events whose in-app notification is recorded elsewhere. */
-export function emailTeam(workspaceId: string, notification: TeamNotification) {
-  after(() => sendTeamEmails(workspaceId, notification));
+export function emailStaff(workspaceId: string, notification: StaffNotification) {
+  after(() => sendStaffEmails(workspaceId, notification));
 }
 
 /** Emails the contact, or every invited contact of the company, when the workspace allows that topic. */
-export function emailClients(workspaceId: string, recipient: Recipient, notification: ContactNotification) {
+export function emailClients(workspaceId: string, recipient: Recipient, notification: ClientNotification) {
   after(() => sendClientEmails(workspaceId, recipient, notification));
 }
 
@@ -53,7 +53,7 @@ async function loadBrand(admin: AdminSupabase, workspaceId: string) {
   return data;
 }
 
-async function sendTeamEmails(workspaceId: string, notification: TeamNotification) {
+async function sendStaffEmails(workspaceId: string, notification: StaffNotification) {
   const admin = getAdminClient();
   if (!admin) return;
   const workspace = await loadBrand(admin, workspaceId);
@@ -61,7 +61,7 @@ async function sendTeamEmails(workspaceId: string, notification: TeamNotificatio
     .from("workspace_members")
     .select("email")
     .eq("workspace_id", workspaceId)
-    .eq(TEAM_PREFERENCE[notification.topic], true);
+    .eq(STAFF_PREFERENCE[notification.topic], true);
   if (error) throw error;
   await Promise.all(
     members.map((member) =>
@@ -77,11 +77,11 @@ async function sendTeamEmails(workspaceId: string, notification: TeamNotificatio
   );
 }
 
-async function sendClientEmails(workspaceId: string, recipient: Recipient, notification: ContactNotification) {
+async function sendClientEmails(workspaceId: string, recipient: Recipient, notification: ClientNotification) {
   const admin = getAdminClient();
   if (!admin) return;
   const workspace = await loadBrand(admin, workspaceId);
-  if (!workspace[CONTACT_SETTING[notification.topic]]) return;
+  if (!workspace[CLIENT_SETTING[notification.topic]]) return;
 
   let query = admin.from("contacts").select("email").eq("workspace_id", workspaceId).neq("status", "not_invited");
   if (recipient.contact_id) query = query.eq("id", recipient.contact_id);

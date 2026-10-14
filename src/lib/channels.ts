@@ -25,10 +25,18 @@ export async function getChannel({ supabase, workspace }: WorkspaceContext, kind
   return data;
 }
 
+/** The client record a channel belongs to. Shared company channels have no single client record. */
+export function channelClientHref(channel: { contact_id: string | null }): string | null {
+  return channel.contact_id ? `/clients/${channel.contact_id}` : null;
+}
+
 export async function touchChannel({ supabase, workspace }: WorkspaceContext, id: string, summary: string) {
   const { error } = await supabase
     .from("channels")
-    .update({ last_activity_at: new Date().toISOString(), last_activity_summary: summary.slice(0, 140) })
+    .update({
+      last_activity_at: new Date().toISOString(),
+      last_activity_summary: summary.slice(0, 140),
+    })
     .eq("workspace_id", workspace.id)
     .eq("id", id);
   if (error) throw error;

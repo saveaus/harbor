@@ -9,7 +9,7 @@ export default async function AccountSettingsPage() {
     <>
       <SettingsTitle title="Account" />
       <form action={updateProfile}>
-        <SettingsSection title="Profile" description="How you appear to teammates and clients.">
+        <SettingsSection title="Profile" description="How you appear to other staff and clients.">
           <div className="space-y-4">
             <Field label="Display name">
               <Input name="display_name" defaultValue={member.display_name} maxLength={80} required />

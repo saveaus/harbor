@@ -27,5 +27,5 @@ export async function sendMessage(channelId: string, form: FormData) {
     path: "/portal/messages",
   });
   revalidatePath("/messages", "layout");
-  revalidatePath("/crm", "layout");
+  revalidatePath("/clients", "layout");
 }

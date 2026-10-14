@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { Alert, Badge, Button, Card, Field, Input } from "@/components/ui";
 import { contractStatus } from "@/lib/contracts";
-import { contactName, formatDate } from "@/lib/format";
+import { personName, formatDate } from "@/lib/format";
 import { requirePortalApp } from "@/lib/portal";
 import { signPortalContract } from "../../actions";
 
@@ -47,7 +47,7 @@ export default async function PortalContractPage({
           <form action={signPortalContract.bind(null, contract.id)} className="mt-6 space-y-4">
             {notice ? <Alert>{notice}</Alert> : null}
             <Field label="Type your full name to sign">
-              <Input name="name" required minLength={2} maxLength={120} defaultValue={contactName(contact)} />
+              <Input name="name" required minLength={2} maxLength={120} defaultValue={personName(contact)} />
             </Field>
             <label className="flex items-start gap-2 text-[13px] text-ink-2">
               <input type="checkbox" name="agree" required className="mt-0.5 size-4 accent-[var(--color-accent)]" />

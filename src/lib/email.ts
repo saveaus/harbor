@@ -6,6 +6,8 @@ export type Email = {
   subject: string;
   heading: string;
   body?: string;
+  /** Shown as a list under the body, such as the shifts in a roster. */
+  lines?: string[];
   action: { label: string; href: string };
   brand: { name: string; color: string };
 };
@@ -20,7 +22,11 @@ const ESCAPES: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;"
 const escape = (value: string) => value.replace(/[&<>"']/g, (c) => ESCAPES[c]);
 
 function render(email: Email): string {
-  const body = email.body ? `<p style="margin:0 0 24px;color:#52525b;font-size:14px;line-height:22px">${escape(email.body)}</p>` : "";
+  const body =
+    (email.body ? `<p style="margin:0 0 24px;color:#52525b;font-size:14px;line-height:22px">${escape(email.body)}</p>` : "") +
+    (email.lines?.length
+      ? `<ul style="margin:0 0 24px;padding-left:18px;color:#3f3f46;font-size:14px;line-height:22px">${email.lines.map((l) => `<li>${escape(l)}</li>`).join("")}</ul>`
+      : "");
   return `<!doctype html><html><body style="margin:0;background:#f4f4f5;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:40px 16px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#fff;border-radius:12px;border:1px solid #e4e4e7">
@@ -45,7 +51,9 @@ export async function sendEmail(email: Email): Promise<SendOutcome> {
         to: [email.to],
         subject: email.subject,
         html: render(email),
-        text: [email.heading, email.body, `${email.action.label}: ${email.action.href}`].filter(Boolean).join("\n\n"),
+        text: [email.heading, email.body, email.lines?.map((l) => `- ${l}`).join("\n"), `${email.action.label}: ${email.action.href}`]
+          .filter(Boolean)
+          .join("\n\n"),
       }),
       signal: AbortSignal.timeout(10_000),
     });

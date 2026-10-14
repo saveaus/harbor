@@ -13,7 +13,7 @@ const PORTAL_APPS: Partial<Record<AppKey, PortalLink>> = {
 };
 
 export const PORTAL_HOME: PortalLink = { href: "/portal", label: "Home", icon: Home, description: "" };
-const MESSAGES: PortalLink = { href: "/portal/messages", label: "Messages", icon: MessageSquare, description: "Chat with the team" };
+const MESSAGES: PortalLink = { href: "/portal/messages", label: "Messages", icon: MessageSquare, description: "Chat with our staff" };
 
 /** Apps a client sees, in sidebar order. Messages and Files also need the client's own channel. */
 export function portalApps(

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { FormFieldInputs } from "@/components/form-fields";
 import { Button, Card } from "@/components/ui";
-import { contactName } from "@/lib/format";
+import { personName } from "@/lib/format";
 import { parseFields } from "@/lib/forms";
 import { requireApp } from "@/lib/workspace";
 import { submitAnswers } from "../../actions";
@@ -26,7 +26,7 @@ export default async function RespondPage({ params }: { params: Promise<{ id: st
       <Link href={`/forms/${request.form.id}`} className="inline-flex items-center gap-1 text-[13px] text-ink-3 hover:text-ink">
         <ChevronLeft size={14} /> {request.form.name}
       </Link>
-      <h1 className="mt-3 text-[18px] font-semibold">Enter answers for {request.contact ? contactName(request.contact) : "contact"}</h1>
+      <h1 className="mt-3 text-[18px] font-semibold">Enter answers for {request.contact ? personName(request.contact) : "contact"}</h1>
       <p className="mt-0.5 text-[13px] text-ink-3">
         Use this when a client sends answers another way. Clients with portal access can fill it in themselves.
       </p>

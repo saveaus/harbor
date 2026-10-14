@@ -2,7 +2,7 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Tables } from "@/lib/supabase/database.types";
-import { parseAppKey, type AppKey } from "@/lib/apps";
+import { DEFAULT_APP_KEYS, parseAppKey, type AppKey } from "@/lib/apps";
 
 export type WorkspaceContext = {
   supabase: Awaited<ReturnType<typeof createClient>>;
@@ -36,7 +36,7 @@ export const getWorkspace = cache(async (): Promise<WorkspaceContext> => {
     .eq("workspace_id", workspace.id);
   if (installError) throw installError;
 
-  const installedApps = new Set<AppKey>();
+  const installedApps = new Set<AppKey>(DEFAULT_APP_KEYS);
   for (const install of installs) {
     const key = parseAppKey(install.app_key);
     if (key) installedApps.add(key);

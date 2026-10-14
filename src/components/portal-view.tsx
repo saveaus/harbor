@@ -104,7 +104,7 @@ export function PortalHomeView({
           <ul>
             {tasks.map((task) => (
               <li key={task.href} className="border-b border-line last:border-0">
-                <Link href={task.href} className="flex items-center gap-3 px-4 py-2.5 hover:bg-surface">
+                <Link href={task.href} className="flex items-center gap-3 px-4 py-2.5 hover:bg-hover">
                   <span className="flex-1 truncate text-[13px] font-medium text-ink">{task.label}</span>
                   <span className="text-[13px] text-ink-3">{task.detail}</span>
                   <ChevronRight size={14} className="text-ink-4" />
@@ -119,7 +119,7 @@ export function PortalHomeView({
       {content.showApps && apps.length > 0 ? (
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {apps.map(({ href, label, description, icon: Icon }) => (
-            <Link key={href} href={href} className="rounded-card border border-line-strong bg-canvas p-4 shadow-card hover:bg-surface">
+            <Link key={href} href={href} className="rounded-card border border-line-strong bg-canvas p-4 shadow-card hover:bg-hover">
               <span className="flex size-8 items-center justify-center rounded-control bg-accent-soft text-accent">
                 <Icon size={15} strokeWidth={1.8} />
               </span>

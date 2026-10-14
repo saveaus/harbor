@@ -2,11 +2,16 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { APPS, type AppKey } from "@/lib/apps";
+import { APPS, LIBRARY_APP_KEYS, type AppKey } from "@/lib/apps";
 import { getWorkspace } from "@/lib/workspace";
+
+function isLibraryApp(key: AppKey) {
+  return (LIBRARY_APP_KEYS as readonly AppKey[]).includes(key);
+}
 
 /** Removing an app hides it for the team and clients but keeps its data. */
 export async function setAppInstalled(key: AppKey, installed: boolean) {
+  if (!isLibraryApp(key)) return;
   const { supabase, workspace } = await getWorkspace();
   const { error } = installed
     ? await supabase

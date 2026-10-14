@@ -35,10 +35,10 @@ export default async function ConnectorsPage() {
     {
       name: "Email",
       icon: Mail,
-      description: "Sends notifications to your team and clients, branded with your workspace name and color.",
+      description: "Sends notifications to your staff and clients, branded with your workspace name and color.",
       connected: emailConfigured(),
       status: emailConfigured() ? "Sending" : "Not configured for this deployment",
-      manage: { href: "/settings/contact-notifications", label: "Choose emails" },
+      manage: { href: "/settings/client-notifications", label: "Choose emails" },
     },
     {
       name: "AI",
@@ -75,7 +75,7 @@ export default async function ConnectorsPage() {
               <p className="mt-0.5 text-[13px] text-ink-3">{description}</p>
             </div>
             {manage ? (
-              <Link href={manage.href} className="shrink-0 text-[13px] font-medium text-link hover:underline">
+              <Link href={manage.href} className="shrink-0 text-[13px] font-medium text-link hover:text-ink">
                 {manage.label}
               </Link>
             ) : null}

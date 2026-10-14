@@ -41,7 +41,7 @@ async function InviteCard({ params, searchParams }: InviteProps) {
     );
 
   const brand = <BrandMark name={invite.workspaceName} color={invite.brandColor} logoUrl={brandAssetUrl(invite.logoPath)} size="md" />;
-  const audience = invite.kind === "client" ? "client portal" : "team";
+  const audience = invite.kind === "client" ? "client portal" : "staff workspace";
   const title = `Join the ${invite.workspaceName} ${audience}`;
 
   if (invite.state !== "valid")

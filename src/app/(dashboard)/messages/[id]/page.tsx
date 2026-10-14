@@ -4,8 +4,8 @@ import { Composer } from "@/components/composer";
 import { Menu } from "@/components/menu";
 import { MessageThread } from "@/components/message-thread";
 import { RecordRail } from "@/components/record-rail";
-import { buttonClass } from "@/components/ui";
-import { getChannel } from "@/lib/channels";
+import { buttonClass, textLinkClass } from "@/components/ui";
+import { channelClientHref, getChannel } from "@/lib/channels";
 import { getWorkspace } from "@/lib/workspace";
 import { sendMessage } from "../actions";
 
@@ -21,19 +21,21 @@ export default async function ChannelPage({ params }: { params: Promise<{ id: st
     .order("created_at");
   if (error) throw error;
 
-  const recordHref = channel.company_id ? `/crm/companies/${channel.company_id}` : `/crm/contacts/${channel.contact_id}`;
+  const recordHref = channelClientHref(channel);
 
   return (
     <>
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-[61px] shrink-0 items-center justify-between gap-3 border-b border-line px-5">
           <span className="truncate text-[13px] font-medium text-black">{channel.title}</span>
-          <Menu
-            label="Channel options"
-            triggerClassName={buttonClass("secondary", "w-7 px-0")}
-            trigger={<MoreHorizontal size={14} />}
-            items={[{ label: channel.company_id ? "Open company" : "Open contact", href: recordHref }]}
-          />
+          {recordHref ? (
+            <Menu
+              label="Channel options"
+              triggerClassName={buttonClass("secondary", "w-7 px-0")}
+              trigger={<MoreHorizontal size={14} />}
+              items={[{ label: "Open client", href: recordHref }]}
+            />
+          ) : null}
         </header>
         <div className="flex-1 overflow-y-auto px-5 py-4">
           <div className="mx-auto max-w-[640px]">
@@ -42,7 +44,7 @@ export default async function ChannelPage({ params }: { params: Promise<{ id: st
                 <Info size={14} className="mt-0.5 shrink-0 text-link" />
                 <div>
                   New conversations greet clients with your welcome message: &ldquo;{ctx.workspace.welcome_message}&rdquo;{" "}
-                  <Link href="/settings/general" className="text-link hover:underline">
+                  <Link href="/settings/general" className={textLinkClass}>
                     Update settings
                   </Link>
                 </div>
@@ -52,15 +54,12 @@ export default async function ChannelPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
         <div className="mx-auto w-full max-w-[680px]">
-          <Composer action={sendMessage.bind(null, id)} placeholder="Message your contact" />
+          <Composer action={sendMessage.bind(null, id)} placeholder="Message your client" />
         </div>
       </div>
-      <RecordRail
-        name={channel.title}
-        detailsLabel={channel.company_id ? "Company details" : "Contact details"}
-        detailsHref={recordHref}
-        notesHref={`${recordHref}?panel=notes`}
-      />
+      {recordHref ? (
+        <RecordRail name={channel.title} detailsLabel="Client details" detailsHref={`${recordHref}?panel=details`} notesHref={`${recordHref}?panel=notes`} />
+      ) : null}
     </>
   );
 }

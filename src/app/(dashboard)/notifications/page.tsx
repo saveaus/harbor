@@ -50,7 +50,7 @@ export default async function NotificationsPage() {
         <ul className="flex-1 overflow-y-auto">
           {data.map((n) => (
             <li key={n.id} className="border-b border-line">
-              <Link href={n.href || "/notifications"} className="flex items-start gap-3 px-5 py-3 hover:bg-surface">
+              <Link href={n.href || "/notifications"} className="flex items-start gap-3 px-5 py-3 hover:bg-hover">
                 <span className={`mt-1.5 size-2 shrink-0 rounded-full ${n.read_at ? "bg-transparent" : "bg-accent"}`} />
                 <div className="min-w-0 flex-1">
                   <div className="text-[13px] font-medium">{n.title}</div>

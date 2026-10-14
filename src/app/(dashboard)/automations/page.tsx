@@ -66,7 +66,7 @@ export default async function AutomationsPage() {
           <EmptyState
             icon={<Workflow size={18} />}
             title="No automations yet"
-            body="Send a message or alert your team when a client pays, signs, fills in a form, writes to you or is added."
+            body="Send a message or alert staff when a client pays, signs, fills in a form, writes to you or is added."
             action={create}
           />
         ) : (

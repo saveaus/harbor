@@ -90,7 +90,7 @@ export function ChannelList({ base, title, channels }: { base: string; title: st
             [
               ["all", "All channels"],
               ["companies", "Companies"],
-              ["contacts", "Contacts"],
+              ["contacts", "Clients"],
             ] as const
           ).map(([value, label]) => ({ label: owner === value ? `✓ ${label}` : label, onSelect: () => setOwner(value) }))}
         />
@@ -104,7 +104,7 @@ export function ChannelList({ base, title, channels }: { base: string; title: st
                 href={href}
                 className={clsx(
                   "flex items-center gap-3 border-b border-line px-5 py-3 transition-colors",
-                  pathname === href ? "bg-surface" : "hover:bg-surface",
+                  pathname === href ? "bg-hover" : "hover:bg-hover",
                 )}
               >
                 <Avatar name={channel.title} square />
@@ -121,7 +121,7 @@ export function ChannelList({ base, title, channels }: { base: string; title: st
         })}
         {visible.length === 0 ? (
           <li className="px-5 py-8 text-center text-[13px] text-ink-3">
-            {channels.length === 0 ? "Add a company or contact to start a channel." : "No channels match."}
+            {channels.length === 0 ? "Add a client or company to start a channel." : "No channels match."}
           </li>
         ) : null}
       </ul>

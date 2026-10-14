@@ -1,8 +1,8 @@
 import { FileSignature, Send } from "lucide-react";
 import { FormDialog } from "@/components/dialog";
 import { Badge, ButtonLink, Cell, EmptyState, Field, Row, Select, Table } from "@/components/ui";
-import { listContactOptions } from "@/lib/contacts";
-import { contactName, formatDate } from "@/lib/format";
+import { listClientOptions } from "@/lib/clients";
+import { personName, formatDate } from "@/lib/format";
 import { requireApp } from "@/lib/workspace";
 import { sendContract } from "./actions";
 import { contractStatus } from "@/lib/contracts";
@@ -16,7 +16,7 @@ export default async function ContractsPage() {
       .eq("workspace_id", ctx.workspace.id)
       .order("sent_at", { ascending: false }),
     ctx.supabase.from("contract_templates").select("id, name").eq("workspace_id", ctx.workspace.id).order("name"),
-    listContactOptions(ctx),
+    listClientOptions(ctx),
   ]);
   if (contracts.error) throw contracts.error;
   if (templates.error) throw templates.error;
@@ -34,7 +34,7 @@ export default async function ContractsPage() {
           </>
         }
         title="Send a contract"
-        description="The contact can review and sign it from their portal."
+        description="The client can review and sign it from their portal."
         action={sendContract}
         submitLabel="Send"
       >
@@ -78,7 +78,7 @@ export default async function ContractsPage() {
           return (
             <Row key={c.id} href={`/contracts/${c.id}`}>
               <Cell className="font-medium text-ink">{c.name}</Cell>
-              <Cell>{c.contact ? contactName(c.contact) : "—"}</Cell>
+              <Cell>{c.contact ? personName(c.contact) : "—"}</Cell>
               <Cell>
                 <Badge tone={status.tone}>{status.label}</Badge>
               </Cell>

@@ -59,3 +59,17 @@ body {
 dialog::backdrop {
   background: rgb(16 18 22 / 0.28);
 }
+
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+[role="menuitem"],
+[role="switch"],
+[role="tab"],
+summary {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
